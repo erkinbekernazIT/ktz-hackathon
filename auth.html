@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<script src="js/i18n.js"></script>
+<script src="js/session.js"></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SMART STATION — Вход и регистрация</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ice:#8fd3ff;--tx:#eaf4ff;--mut:#9ab2d0;--glass:rgba(12,24,50,.6);--bd:rgba(143,211,255,.26);--err:#ff9a9a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;color:var(--tx);font-family:'Exo 2',system-ui,'Segoe UI',sans-serif;background:radial-gradient(ellipse at 70% 55%,#17356b 0%,#0a1630 45%,#050b18 100%)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}
+.screen{position:fixed;inset:0;pointer-events:none;transition:opacity .7s ease,transform .7s ease}
+.screen.off{opacity:0;transform:scale(1.03);visibility:hidden;transition:opacity .7s,transform .7s,visibility 0s .7s}
+.screen.on>*{pointer-events:auto}
+#fade{position:fixed;inset:0;background:#050b18;opacity:0;pointer-events:none;transition:opacity .55s ease;z-index:9}
+#fade.on{opacity:1;pointer-events:auto}
+.btn{pointer-events:auto;font:inherit;font-weight:600;letter-spacing:.14em;color:#fff;border:1px solid var(--bd);border-radius:999px;padding:18px 48px;font-size:16px;cursor:pointer;background:linear-gradient(180deg,#3d8dff,#1b4fc4);box-shadow:0 10px 30px rgba(20,70,200,.45),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .3s,box-shadow .3s,filter .3s}
+.btn:hover{transform:scale(1.06);filter:brightness(1.18);box-shadow:0 0 38px 8px rgba(90,175,255,.6),0 14px 40px rgba(20,70,200,.6),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn:active{transform:scale(.99)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+:root{--ice:#1f6fe0;--tx:#0b1f44;--mut:#4c6486;--glass:rgba(255,255,255,.66);--bd:rgba(40,100,190,.24);--err:#d83a3a}
+html,body{background:linear-gradient(135deg,#f6f9fe 0%,#e0ebf8 55%,#cddff4 100%);color:var(--tx)}
+#fade{background:#eaf2fc}
+#auth{display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at center,rgba(5,11,24,.15),rgba(5,11,24,.6))}
+.card{width:min(460px,100%);max-height:100%;overflow:auto;padding:30px 30px 22px;border-radius:26px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 60px rgba(47,123,255,.2),inset 0 1px 0 rgba(255,255,255,.12)}
+.card h2{font-size:24px;letter-spacing:.24em;text-align:center;font-weight:800}
+.card .s{text-align:center;color:var(--mut);font-size:12px;letter-spacing:.1em;margin:6px 0 20px}
+.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;background:rgba(5,11,24,.55);border-radius:999px;padding:4px;margin-bottom:18px}
+.tabs button{position:relative;z-index:1;font:inherit;background:none;border:0;color:var(--mut);padding:10px;cursor:pointer;font-weight:600;letter-spacing:.1em;font-size:13px;transition:.3s}
+.tabs button.on{color:#fff}
+.pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:linear-gradient(180deg,#3d8dff,#1b4fc4);box-shadow:0 0 18px rgba(47,123,255,.6);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.tabs.reg .pill{transform:translateX(100%)}
+form{display:none;flex-direction:column;gap:12px}
+form.on{display:flex;animation:in .45s ease}
+.card{transition:width .5s cubic-bezier(.2,.8,.2,1)}.card.wide{width:min(720px,100%)}
+#fup.on{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}.full{grid-column:1/-1}.lnk.full{justify-self:center}
+.sb{height:4px;border-radius:4px;background:rgba(255,255,255,.12);margin-top:8px;overflow:hidden}.sb i{display:block;height:100%;width:0;transition:.3s}
+.ck{display:flex;gap:10px;align-items:flex-start;font-size:12px;letter-spacing:0;line-height:1.4}.ck input{width:auto;margin:2px 0 0}
+@media(max-width:640px){#fup.on{grid-template-columns:1fr}}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+form.bad{animation:sh .3s}
+label{font-size:11px;letter-spacing:.14em;color:var(--mut);display:block}
+input,select{width:100%;margin-top:5px;font:inherit;font-size:15px;letter-spacing:0;color:var(--tx);background:rgba(5,11,24,.6);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;outline:none;transition:.25s}
+select option{background:#0b1730}
+input:focus,select:focus{border-color:var(--ice);box-shadow:0 0 0 3px rgba(143,211,255,.18)}
+.f.e input,.f.e select{border-color:var(--err)}
+.er{display:none;color:var(--err);font-size:12px;letter-spacing:.02em;margin-top:4px}
+.f.e .er{display:block}
+form .btn{margin-top:6px;width:100%;padding:14px}
+.lnk{background:none;border:0;color:var(--ice);font:inherit;font-size:12px;cursor:pointer;align-self:center;letter-spacing:.06em}
+.lnk:hover{text-decoration:underline}
+.msg{min-height:20px;text-align:center;font-size:13px;margin-top:10px;color:var(--ice)}
+.msg.bad{color:var(--err)}
+.hint{text-align:center;font-size:11px;color:var(--mut);margin-top:6px}
+.back{background:none;border:0;color:var(--mut);font:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;margin:12px auto 0;display:block}
+.back:hover{color:var(--ice)}
+#c2{position:fixed;inset:0;width:100%;height:100%;cursor:default;touch-action:auto}
+input,select{background:rgba(255,255,255,.8);color:var(--tx)}select option{background:#fff}
+.tabs{background:rgba(255,255,255,.65)}.tabs button{color:var(--mut)}.tabs button.on{color:#fff}
+.card{box-shadow:0 30px 80px rgba(20,50,110,.28),inset 0 1px 0 rgba(255,255,255,.9)}
+#auth{background:radial-gradient(ellipse at center,rgba(255,255,255,.05),rgba(210,226,248,.45))}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(30,18,10,.38) 100%)}
+.demo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}.demo button{font:600 10.5px/1.2 "Exo 2",sans-serif;letter-spacing:.03em;padding:6px 10px;border-radius:999px;border:1px solid rgba(37,99,235,.35);background:rgba(255,255,255,.7);color:#1e40af;cursor:pointer;transition:background .15s}.demo button:hover{background:#2563eb;color:#fff}
+</style></head><body>
+<canvas id="c2"></canvas><div id="vig"></div>
+<section id="auth" class="screen on">
+<div class="card">
+<h2>SMART STATION</h2><p class="s" id="sub">ДОСТУП СОТРУДНИКА КЖД</p>
+<div class="tabs" id="tabs"><span class="pill"></span><button class="on" data-m="in" type="button">ВХОД</button><button data-m="up" type="button">РЕГИСТРАЦИЯ</button></div>
+<form id="fin" class="on" novalidate>
+<div class="f"><label>EMAIL<input name="email" type="email" autocomplete="username" placeholder="name@ktz.kz"></label><div class="er"></div></div>
+<div class="f"><label>ПАРОЛЬ<input name="pass" type="password" autocomplete="current-password" placeholder="••••••••"></label><div class="er"></div></div>
+<button class="btn">ВОЙТИ</button><button type="button" class="lnk" id="forgot">Забыли пароль?</button><button type="button" class="lnk" data-go="up">Нет аккаунта? Зарегистрироваться</button>
+</form>
+<form id="fup" novalidate>
+<div class="f"><label>ФИО<input name="name" autocomplete="name" placeholder="Нурланов Айдар"></label><div class="er"></div></div>
+<div class="f"><label>EMAIL<input name="email" type="email" autocomplete="email" placeholder="name@ktz.kz"></label><div class="er"></div></div>
+<div class="f"><label>ПАРОЛЬ<input name="pass" type="password" autocomplete="new-password" placeholder="Мин. 8 символов, буква и цифра"></label><div class="sb"><i id="sbi"></i></div><div class="er"></div></div>
+<div class="f"><label>ПОДТВЕРДИТЕ ПАРОЛЬ<input name="pass2" type="password" autocomplete="new-password"></label><div class="er"></div></div>
+<div class="f full"><label>ДОЛЖНОСТЬ<select name="pos"><option value="">Выберите должность</option><option value="dispatcher">Диспетчер станции</option><option value="duty">Дежурный по станции</option><option value="tech">Сотрудник технической службы</option><option value="security">Сотрудник службы безопасности</option><option value="manager">Руководитель станции</option></select></label><div class="er"></div></div>
+<div class="f full"><label class="ck"><input type="checkbox" name="ok"><span>Подтверждаю, что я сотрудник КЖД, и принимаю правила использования системы</span></label><div class="er"></div></div>
+<button class="btn full">ЗАРЕГИСТРИРОВАТЬСЯ</button><button type="button" class="lnk full" data-go="in">Уже есть аккаунт? Войти</button>
+</form>
+<div class="msg" id="msg"></div><div class="hint">Тестовые аккаунты:</div><div class="demo" id="demo"></div>
+<button class="back" id="back" type="button">← НА ГЛАВНУЮ</button>
+</div></section>
+<div id="fade" class="on"></div>
+<script>addEventListener('pageshow',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('fade').classList.remove('on'))))</script>
+<script src="js/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),T=THREE,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),R_=Math.random;
+const mk=(c,o)=>{const m=new T.MeshStandardMaterial(Object.assign({color:c,roughness:.75,metalness:.1},o));m.color.convertSRGBToLinear();m.emissive.convertSRGBToLinear();return m};
+const B=(w,h,d)=>new T.BoxGeometry(w,h,d);
+const add=(p,g,m,x=0,y=0,z=0,sh=true)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);if(sh)o.castShadow=o.receiveShadow=true;p.add(o);return o};
+const c2=$('#c2'),R2=new T.WebGLRenderer({canvas:c2,antialias:true});R2.setPixelRatio(Math.min(devicePixelRatio,1.75));
+let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth*2-1;my=e.clientY/innerHeight*2-1});
+/* ================= SCENE 2: coupe ================= */
+const S2=new T.Scene(),C2=new T.PerspectiveCamera(66,1,.05,500);
+{const k=document.createElement('canvas');k.width=4;k.height=256;const g=k.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#2f6fb8');gr.addColorStop(.45,'#8fc1ec');gr.addColorStop(.7,'#f6e3bf');gr.addColorStop(1,'#f6e3bf');g.fillStyle=gr;g.fillRect(0,0,4,256);S2.background=new T.CanvasTexture(k)}
+S2.fog=new T.Fog(0xf0dcb8,50,260);
+/* ===== realistic coupe ===== */
+R2.outputEncoding=T.sRGBEncoding;R2.toneMapping=T.ACESFilmicToneMapping;R2.toneMappingExposure=.95;
+R2.shadowMap.enabled=true;R2.shadowMap.type=T.PCFSoftShadowMap;R2.physicallyCorrectLights=false;
+if(S2.background)S2.background.encoding=T.sRGBEncoding;S2.fog.color.convertSRGBToLinear();
+/* procedural textures */
+const ANI=R2.capabilities.getMaxAnisotropy();
+const cv=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h;f(c.getContext('2d'),w,h);return c};
+const TX=(c,rx,ry,srgb)=>{const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rx,ry);t.anisotropy=ANI;if(srgb)t.encoding=T.sRGBEncoding;return t};
+const grain=(g,w,h,lo,hi,a)=>{const im=g.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const v=lo+Math.random()*(hi-lo);d[i]=d[i]*(1-a)+v*a;d[i+1]=d[i+1]*(1-a)+v*a;d[i+2]=d[i+2]*(1-a)+v*a;d[i+3]=255}g.putImageData(im,0,0)};
+const blobs=(g,w,h,n,s)=>{const sm=cv(n,n,(q)=>{q.fillStyle='#808080';q.fillRect(0,0,n,n);grain(q,n,n,0,255,1)});g.imageSmoothingEnabled=true;g.globalAlpha=s;g.drawImage(sm,0,0,w,h);g.globalAlpha=1};
+/* leather: pebbled grain */
+const leatherC=cv(512,512,(g,w,h)=>{g.fillStyle='#c8c8c8';g.fillRect(0,0,w,h);blobs(g,w,h,128,.6);grain(g,w,h,90,255,.25)});
+const leatherBump=TX(leatherC,16,16),leatherMap=TX(cv(256,256,(g,w,h)=>{g.fillStyle='#f2f2f2';g.fillRect(0,0,w,h);blobs(g,w,h,16,.12);blobs(g,w,h,64,.08)}),2,2,true);
+/* linen: fine weave + soft wrinkles */
+const linenC=cv(512,512,(g,w,h)=>{const im=g.createImageData(w,h),d=im.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=225+14*Math.sin(x*1.9)*Math.sin(y*1.9)+(Math.random()-.5)*14,i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}g.putImageData(im,0,0);
+ g.lineCap='round';for(let i=0;i<14;i++){const x=Math.random()*w,y=Math.random()*h,a=Math.random()*Math.PI,l=60+Math.random()*160;g.strokeStyle='rgba(120,120,120,.10)';g.lineWidth=6+Math.random()*10;g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+Math.cos(a)*l*.5+20,y+Math.sin(a)*l*.5,x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke();g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=3;g.stroke()}});
+const linenMap=TX(linenC,2,2,true),linenBump=TX(linenC,2,2);
+/* carpet */
+const carpetC=cv(256,256,(g,w,h)=>{g.fillStyle='#8a8f9a';g.fillRect(0,0,w,h);grain(g,w,h,40,255,.7);blobs(g,w,h,32,.15)});
+const carpetMap=TX(carpetC,6,8,true),carpetBump=TX(carpetC,6,8);
+/* wall laminate with faint speckle */
+const wallC=cv(256,256,(g,w,h)=>{g.fillStyle='#f4f4f4';g.fillRect(0,0,w,h);blobs(g,w,h,8,.05);grain(g,w,h,215,255,.18)});
+const wallMap=TX(wallC,2,2,true);
+/* wood grain for trims */
+const woodMap=TX(cv(64,512,(g,w,h)=>{for(let y=0;y<h;y++){const v=180+40*Math.sin(y*.09+Math.sin(y*.013)*4)+Math.random()*12;g.fillStyle=`rgb(${v},${v*.86|0},${v*.72|0})`;g.fillRect(0,y,w,1)}}),1,2,true);
+/* rounded box (soft cushions, edges) */
+function RB(w,h,d,r,s=3){r=Math.max(.002,Math.min(r,w/2-.001,h/2-.001,d/2-.001));const e=1e-5,q=r-e,sh=new T.Shape();
+ sh.absarc(e,e,e,-Math.PI/2,-Math.PI,true);sh.absarc(e,h-q*2,e,Math.PI,Math.PI/2,true);sh.absarc(w-q*2,h-q*2,e,Math.PI/2,0,true);sh.absarc(w-q*2,e,e,0,-Math.PI/2,true);
+ const g=new T.ExtrudeGeometry(sh,{depth:Math.max(.001,d-q*2),bevelEnabled:true,bevelSegments:s*2,steps:1,bevelSize:q,bevelThickness:q,curveSegments:s});g.center();return g}
+/* lights: sunlight that enters only through the window (walls cast shadows) */
+S2.add(new T.HemisphereLight(0xfff4e6,0x6b5548,.42));
+const sun2=new T.DirectionalLight(0xfff0d8,2.6);sun2.position.set(-1.3,7.2,-7.4);sun2.target.position.set(.12,.5,.25);S2.add(sun2,sun2.target);
+sun2.castShadow=true;sun2.shadow.mapSize.set(2048,2048);Object.assign(sun2.shadow.camera,{left:-2.4,right:2.4,top:2.6,bottom:-2.6,near:3,far:18});sun2.shadow.bias=-.0004;sun2.shadow.normalBias=.02;sun2.shadow.radius=4;
+const pl=new T.PointLight(0xffe2b8,.42,6,2);pl.position.set(0,2.25,.35);S2.add(pl);
+const wl=new T.PointLight(0xdfeaff,.55,3.4,2);wl.position.set(0,1.25,-.72);S2.add(wl);
+const fl=new T.PointLight(0xfff1e0,.14,5,2);fl.position.set(0,1.4,1.8);S2.add(fl);
+/* materials */
+const wall=mk(0xe3d6b9,{roughness:.62,map:wallMap}),
+ bord=mk(0x6c1624,{roughness:.38,metalness:.05,map:leatherMap,bumpMap:leatherBump,bumpScale:.0011}),
+ bordS=mk(0x6c1624,{roughness:.36,metalness:.05,map:leatherMap}),
+ bordD=mk(0x4a0f19,{roughness:.45,map:leatherMap,bumpMap:leatherBump,bumpScale:.001}),
+ linen=mk(0xf6f3ec,{roughness:.96,map:linenMap,bumpMap:linenBump,bumpScale:.004}),
+ ceil=mk(0xf1ece2,{roughness:.8,map:wallMap}),wood=mk(0xb07040,{roughness:.5,map:woodMap}),
+ brass=mk(0xd2ad72,{metalness:.9,roughness:.28}),steel=mk(0xd5d9de,{metalness:.95,roughness:.22}),
+ carpet=mk(0x1a2436,{roughness:1,map:carpetMap,bumpMap:carpetBump,bumpScale:.006}),
+ frame=mk(0xd9d2c2,{roughness:.45}),rubber=mk(0x222224,{roughness:.85}),dark=mk(0x24272e,{roughness:.6}),
+ lam=mk(0xd8ccb4,{roughness:.35,map:wallMap}),blanket=mk(0x2c3e66,{roughness:1,bumpMap:carpetBump,bumpScale:.004});
+const rm=(g,m,x,y,z,sh=true)=>add(S2,g,m,x,y,z,sh);
+const W2=1.07,ZB=-1,ZF=1.9,LZ=ZF-ZB,ZC=(ZB+ZF)/2;
+/* shell */
+rm(B(2*W2,.04,LZ),carpet,0,-.02,ZC);rm(B(2*W2,.04,LZ),ceil,0,2.42,ZC);
+[-1,1].forEach(s=>rm(B(.04,2.44,LZ),wall,s*(W2+.02),1.2,ZC));
+/* back wall with rounded window opening */
+const rr=(x0,y0,x1,y1,r,p)=>{p.moveTo(x0+r,y0);p.lineTo(x1-r,y0);p.quadraticCurveTo(x1,y0,x1,y0+r);p.lineTo(x1,y1-r);p.quadraticCurveTo(x1,y1,x1-r,y1);p.lineTo(x0+r,y1);p.quadraticCurveTo(x0,y1,x0,y1-r);p.lineTo(x0,y0+r);p.quadraticCurveTo(x0,y0,x0+r,y0);return p};
+const WX=.38,WY0=.98,WY1=1.58;
+{const s=new T.Shape();rr(-W2-.05,-.05,W2+.05,2.5,0,s);s.holes.push(rr(-WX,WY0,WX,WY1,.09,new T.Path()));
+ const g=new T.ExtrudeGeometry(s,{depth:.08,bevelEnabled:false,curveSegments:10});wallMap.repeat.set(2,2);rm(g,wall,0,0,ZB-.08)}
+const ringG=(o,i,d,bv)=>{const s=rr(-WX-o,WY0-o,WX+o,WY1+o,.09+o,new T.Shape());s.holes.push(rr(-WX-i,WY0-i,WX+i,WY1+i,Math.max(.01,.09+i),new T.Path()));return new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:bv,bevelSize:bv,bevelSegments:3,curveSegments:12})};
+rm(ringG(.075,0,.025,.012),frame,0,0,ZB);rm(ringG(.012,-.014,.02,.004),rubber,0,0,ZB-.015);
+rm(ringG(.0,-.03,.012,.003),frame,0,0,ZB-.045);
+/* glass: light haze + faint reflection */
+rm(new T.PlaneGeometry(2*WX,WY1-WY0),new T.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.16,roughness:.05,metalness:0,clearcoat:1,depthWrite:false}),0,(WY0+WY1)/2,ZB-.035,false);
+/* window sill and latches */
+rm(RB(.86,.03,.12,.012),frame,0,WY0-.085,ZB+.05);
+[-1,1].forEach(s=>{rm(RB(.07,.025,.04,.01),steel,s*.22,WY1+.05,ZB+.035);rm(RB(.09,.045,.02,.008),frame,s*(WX+.21),1.32,ZB+.012)});
+/* corner trims, skirting */
+[-1,1].forEach(s=>{rm(RB(.035,2.42,.045,.01),wood,s*(W2-.02),1.2,ZB+.02);rm(B(.012,2.42,LZ),frame,s*(W2-.003),1.2,ZC,false)});
+rm(B(2*W2,.08,.02),dark,0,.04,ZB+.012);
+/* heater grille */
+rm(RB(.72,.3,.035,.012),frame,0,.25,ZB+.02);for(let i=0;i<8;i++)rm(B(.64,.012,.015),dark,0,.135+i*.032,ZB+.04,false);
+/* table */
+rm(RB(.56,.032,.42,.012),lam,0,.735,ZB+.23);rm(B(.565,.012,.005),steel,0,.735,ZB+.443);
+rm(RB(.6,.008,.46,.003),linen,0,.756,ZB+.24);
+rm(RB(.6,.1,.006,.002),linen,0,.71,ZB+.472);[-1,1].forEach(s=>rm(RB(.006,.075,.44,.002),linen,s*.302,.722,ZB+.24));
+rm(RB(.008,.18,.006,.002),steel,0,.65,ZB+.05);
+{const n=rm(RB(.3,.006,.21,.002),mk(0xdcdfe2,{roughness:.9,map:wallMap}),-.06,.764,ZB+.2);n.rotation.y=.14}
+rm(new T.CylinderGeometry(.016,.016,.72,16),steel,0,.36,ZB+.38);rm(new T.CylinderGeometry(.06,.07,.01,24),steel,0,.005,ZB+.4);
+/* glass of tea in a metal holder (podstakannik) */
+{const gx=.14,gz=ZB+.3,gy=.76;
+ rm(new T.CylinderGeometry(.034,.03,.085,24,1,true),new T.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.25,roughness:.05,side:T.DoubleSide,depthWrite:false}),gx,gy+.06,gz,false);
+ rm(new T.CylinderGeometry(.031,.028,.062,24),mk(0x7a3a12,{roughness:.1,transparent:true,opacity:.85}),gx,gy+.048,gz,false);
+ rm(new T.CylinderGeometry(.037,.033,.055,24,1,true),mk(0xb9b2a4,{metalness:1,roughness:.25,side:T.DoubleSide}),gx,gy+.03,gz);
+ const h=rm(new T.TorusGeometry(.022,.005,8,16,Math.PI),mk(0xb9b2a4,{metalness:1,roughness:.25}),gx+.045,gy+.035,gz);h.rotation.z=-Math.PI/2;
+ const sp=rm(new T.CylinderGeometry(.003,.003,.13,6),steel,gx+.008,gy+.1,gz-.006,false);sp.rotation.z=.18}
+/* berths */
+const LB=1.95,BZ=ZB+LB/2+.025;
+[-1,1].forEach(s=>{
+ const xin=s*.44,xc=s*.755,xw=s*1.035;
+ /* lower berth: frame, leather cushion, sheet, pillow */
+ rm(RB(.63,.32,LB,.02),bordD,xc,.16,BZ);
+ rm(RB(.63,.1,LB,.04),bordS,xc,.37,BZ);
+ rm(RB(.57,.022,LB-.08,.01),linen,xc+s*.015,.43,BZ+.01);
+ rm(RB(.5,.1,.3,.05),linen,xc+s*.03,.48,ZB+.24);
+ rm(RB(.08,.16,LB,.035),bordS,xin,.39,BZ);
+ /* wall cushions with stitch lines */
+ rm(RB(.09,.38,LB,.045),bord,xw,.7,BZ);
+ [.62,.78].forEach(y=>rm(B(.012,.006,LB-.06),bordD,s*.99,y,BZ,false));
+ rm(RB(.075,.22,LB,.035),bordS,xw,1.2,BZ);rm(B(.01,.005,LB-.06),bordD,s*.997,1.2,BZ,false);
+ /* brass hand rail */
+ {const c=rm(new T.CylinderGeometry(.009,.009,.62,12),brass,s*.995,.975,BZ+.05);c.rotation.x=Math.PI/2;
+  [-.3,.3].forEach(dz=>{rm(RB(.045,.022,.022,.008),brass,s*1.012,.975,BZ+.05+dz);rm(new T.SphereGeometry(.012,12,8),brass,s*.995,.975,BZ+.05+dz*1.04)})}
+ /* net rack: chrome tubes + wire mesh */
+ const rz=BZ+.15;
+ [[.86,1.455],[1.03,1.425]].forEach(([x,y])=>{const c=rm(new T.CylinderGeometry(.009,.009,.64,12),steel,s*x,y,rz);c.rotation.x=Math.PI/2});
+ for(let i=0;i<14;i++)rm(B(.17,.003,.003),steel,s*.945,1.438,rz-.3+i*.046,false);
+ for(let i=0;i<4;i++)rm(B(.003,.003,.62),steel,s*(.88+i*.04),1.438-i*.007,rz,false);
+ [-.32,.32].forEach(dz=>{rm(B(.18,.012,.012),steel,s*.945,1.44,rz+dz);rm(RB(.03,.06,.02,.008),steel,s*1.04,1.42,rz+dz)});
+ /* upper berth */
+ rm(RB(.63,.1,LB,.03),bordS,xc,1.6,BZ);rm(B(.6,.004,LB-.06),bordD,xc,1.548,BZ,false);
+ rm(RB(.6,.07,LB-.04,.03),linen,xc+s*.01,1.685,BZ);
+ rm(RB(.5,.1,.3,.05),linen,xc+s*.03,1.76,ZB+.24);
+ rm(RB(.42,.11,.55,.05),blanket,xc+s*.04,1.77,ZB+.75);
+ rm(RB(.08,.17,LB,.035),bordS,xin,1.67,BZ);
+ /* safety rail */
+ const rx=s*.47,z1=ZB+.18,z2=ZB+.62;
+ [z1,z2].forEach(z=>{rm(new T.CylinderGeometry(.012,.012,.36,12),brass,rx,1.9,z);rm(new T.SphereGeometry(.0125,12,8),brass,rx,2.08,z);rm(RB(.04,.02,.04,.008),brass,rx,1.72,z)});
+ {const c=rm(new T.CylinderGeometry(.012,.012,z2-z1,12),brass,rx,2.08,(z1+z2)/2);c.rotation.x=Math.PI/2}
+ /* reading light above the upper berth */
+ rm(RB(.12,.05,.08,.02),frame,s*1.0,2.18,ZB+.3);rm(RB(.08,.01,.05,.004),new T.MeshBasicMaterial({color:0xfff2d6}),s*.99,2.155,ZB+.3,false);
+});
+/* ceiling: lamp, smoke detector, vent, sign */
+rm(RB(.56,.03,1.16,.012),frame,0,2.405,ZC+.2);
+rm(B(.5,.004,1.1),new T.MeshBasicMaterial({color:0xfff7ea,toneMapped:false}),0,2.388,ZC+.2,false);
+rm(new T.CylinderGeometry(.045,.05,.035,24),mk(0xf7f7f5,{roughness:.5}),0,2.39,ZB+.3);
+rm(RB(.3,.012,.18,.004),frame,0,2.41,ZB+.62);for(let i=0;i<6;i++)rm(B(.26,.004,.008),dark,0,2.402,ZB+.55+i*.026,false);
+rm(RB(.14,.08,.01,.003),mk(0xffffff,{roughness:.4}),0,2.0,ZB+.01);
+/* scenery behind window */
+const scn=[],sc=(o,sp,h)=>{S2.add(o);scn.push({o,sp,h});return o};
+const gr=new T.Mesh(new T.PlaneGeometry(900,500),mk(0xb8a66b,{roughness:1}));gr.rotation.x=-Math.PI/2;gr.position.set(0,-1.2,-250);S2.add(gr);
+for(let i=0;i<8;i++){const h=30+R_()*25,r=26+R_()*14,g=new T.Group();add(g,new T.ConeGeometry(r,h,6),mk(0x6f86a8,{roughness:1}),0,h/2-1.2,0,false);add(g,new T.ConeGeometry(r*.33,h*.33,6),mk(0xf4f8ff),0,h*.83-1.2,0,false);g.position.set(-150+i*40,0,-120);sc(g,.9,170)}
+for(let i=0;i<7;i++){const h=new T.Mesh(new T.SphereGeometry(1,16,10),mk(i%2?0x8a9a5a:0xa89e62,{roughness:1}));h.scale.set(16+R_()*8,4+R_()*3,10);h.position.set(-120+i*40,-1.2,-50);sc(h,2.2,140)}
+for(let i=0;i<22;i++){const g=new T.Group(),s=.8+R_()*.8;add(g,new T.CylinderGeometry(.08*s,.1*s,1*s,6),mk(0x5a3d26),0,-.7,0,false);add(g,new T.SphereGeometry(.7*s,10,8),mk(new T.Color().setHSL(.25+R_()*.08,.35,.32),{roughness:1}),0,.1,0,false);g.position.set(-70+i*6.4+R_()*3,0,-12-R_()*6);sc(g,7,72)}
+for(let i=0;i<9;i++){const g=new T.Group();add(g,new T.CylinderGeometry(.07,.09,4.6,6),mk(0x4a3a2a),0,1.1,0,false);add(g,B(1.3,.07,.07),mk(0x4a3a2a),0,2.9,0,false);
+g.add(new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0,2.9,0),new T.Vector3(5,2.5,0),new T.Vector3(10,2.9,0)]),new T.LineBasicMaterial({color:0x333333})));g.position.set(-45+i*10,0,-5.5);sc(g,18,50)}
+for(let i=0;i<60;i++)sc(Object.assign(new T.Mesh(B(.08,.8,.08),mk(0x6a5a40)),{}),21,45).position.set(-45+i*1.5,-.4,-4.6);
+for(let i=0;i<9;i++){const g=new T.Group();for(let j=0;j<4;j++){const s=add(g,new T.SphereGeometry(5+R_()*3,10,8),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8,fog:false}),j*7-10,R_()*2,R_()*3,false);s.scale.y=.45}g.position.set(-180+i*45,38+R_()*15,-140);sc(g,.6,200)}
+/* only telegraph poles outside cast (moving) shadows into the compartment */
+scn.forEach(s=>s.o.traverse(o=>{o.castShadow=s.sp===18;o.receiveShadow=false}));S2.children.forEach(o=>{if(!o.isMesh||o.position.z<-3.5){if(o.isMesh)o.castShadow=false}});
+function resize(){const w=innerWidth,h=innerHeight;R2.setSize(w,h);C2.aspect=w/h;C2.fov=w/h<1.2?88:66;C2.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const clock=new T.Clock();
+(function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+scn.forEach(s=>{s.o.position.x-=s.sp*dt;if(s.o.position.x<-s.h)s.o.position.x+=2*s.h});
+C2.position.set(mx*.08,1.38-my*.05+Math.sin(t*11)*.003,1.5);C2.lookAt(mx*.25,1.18-my*.12,-1);pl.intensity=.42+.02*Math.sin(t*3);R2.render(S2,C2)})();
+/* forms */
+const users={'demo@ktz.kz':{name:'Демо Пользователь',pos:'Диспетчер',pass:'Demo1234'}},msg=$('#msg'),EM=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const say=(t,bad)=>{msg.textContent=t;msg.className='msg'+(bad?' bad':'')};
+const fe=(f,m)=>{const w=f.closest('.f');w.classList.toggle('e',!!m);w.querySelector('.er').textContent=m||''};
+document.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',()=>fe(i,'')));
+function chk(f){let ok=true;const v=n=>f.elements[n],bad=(n,m)=>{fe(v(n),m);ok=false};
+const e=v('email').value.trim().toLowerCase();if(!e)bad('email','Введите email');else if(!EM.test(e))bad('email','Некорректный email');
+const p=v('pass').value;
+if(f.id==='fin'){if(!p)bad('pass','Введите пароль')}
+else{const nm=v('name').value.trim().split(/\s+/);if(nm.length<2||nm.some(x=>x.length<2))bad('name','Укажите фамилию и имя полностью');
+if(p.length<8||!/[A-Za-zА-Яа-я]/.test(p)||!/\d/.test(p))bad('pass','Минимум 8 символов, буква и цифра');
+if(v('pass2').value!==p||!v('pass2').value)bad('pass2','Пароли не совпадают');if(!v('pos').value)bad('pos','Выберите должность');if(!v('ok').checked)bad('ok','Необходимо подтверждение')}
+if(!ok){f.classList.remove('bad');void f.offsetWidth;f.classList.add('bad')}return ok}
+$('#fin').onsubmit=ev=>{ev.preventDefault();const f=ev.target;say('');if(!chk(f))return;const u=SS.find(f.email.value,f.pass.value);if(u&&u.blocked){say('Аккаунт заблокирован',1);return}if(!u){say('Неверный email или пароль',1);fe(f.pass,'Проверьте введённые данные');return}say('Добро пожаловать, '+u.name+' · '+u.position);const page=SS.start(u);setTimeout(()=>leave(page),650)};
+$('#fup').onsubmit=ev=>{ev.preventDefault();const f=ev.target;say('');if(!chk(f))return;const e=f.email.value.trim().toLowerCase();
+if(SS.emailTaken(e)){fe(f.email,'Этот email уже зарегистрирован');return}
+SS.register({name:f.name.value.trim(),email:e,pass:f.pass.value,role:f.pos.value});say('Регистрация успешна! Теперь войдите.');f.reset();$('#sbi').style.width='0';
+setTimeout(()=>{tab('in');$('#fin').email.value=e;$('#fin').pass.focus()},1100)};
+$('#forgot').onclick=()=>{const i=$('#fin').email,e=i.value.trim();if(!EM.test(e)){fe(i,'Введите корректный email');return}say('Инструкция по сбросу отправлена на '+e)};
+function tab(m){const up=m==='up';$('.card').classList.toggle('wide',up);$('#sub').textContent=up?'РЕГИСТРАЦИЯ СОТРУДНИКА КЖД':'ДОСТУП СОТРУДНИКА КЖД';$('#tabs').classList.toggle('reg',up);document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));$('#fin').classList.toggle('on',!up);$('#fup').classList.toggle('on',up);say('')}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.m));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
+$('#fup').pass.addEventListener('input',e=>{const p=e.target.value;let n=0;if(p.length>=8)n++;if(/[A-Za-zА-Яа-я]/.test(p)&&/\d/.test(p))n++;if(p.length>=12||/[^\w]/.test(p))n++;const i=$('#sbi');i.style.width=(p?Math.max(n,1)*33.3:0)+'%';i.style.background=['#ff8a8a','#ff8a8a','#ffcf6b','#6bff9d'][n]});
+function leave(url){$('#fade').classList.add('on');setTimeout(()=>location.href=url,580)}
+$('#back').onclick=()=>leave('welcome.html');
+if(location.hash==='#up')tab('up');
+/* demo accounts chips */
+(function(){const box=$('#demo');if(!box)return;SS.ACCOUNTS.forEach(a=>{const b=document.createElement('button');b.type='button';b.textContent=SS.ROLES[a.role].position;b.title=a.email+' / '+a.pass;b.onclick=()=>{tab('in');$('#fin').email.value=a.email;$('#fin').pass.value=a.pass;say(a.email+' / '+a.pass)};box.appendChild(b)})})();
+/* already logged in */
+(function(){const u=SS.current();if(u&&SS.ROLES[u.role]&&!location.hash)say('Вы уже вошли: '+u.name+' · '+u.position)})();
+
+
+</script></body></html>

@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<script src="js/i18n.js"></script>
+<script src="js/session.js"></script>
+<script>SS.guard(["duty","tech","security"])</script>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>КТЖ — Смарт-станция</title>
+
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root {
+  --c-bg:       #f0f6ff;
+  --c-bg2:      #e4effe;
+  --c-surf:     #ffffff;
+  --c-surf2:    #f5f9ff;
+  --c-surf3:    #eaf2ff;
+  --c-bord:     #cddaf5;
+  --c-bord2:    #b3c8ef;
+  --c-t1:       #0c1d3d;
+  --c-t2:       #354f7a;
+  --c-t3:       #7a96c0;
+  --c-t4:       #b0c4de;
+  --c-acc:      #2563eb;
+  --c-acc2:     #1d4ed8;
+  --c-acc3:     #dbeafe;
+  --c-acc4:     #3b82f6;
+  --c-nav:      #0c1d3d;
+  --c-nav-t:    #e2eaf8;
+  --c-nav-m:    #4a6a9e;
+  --c-green:    #16a34a; --c-green-bg: #dcfce7; --c-green-b: #86efac;
+  --c-yellow:   #ca8a04; --c-yellow-bg:#fef9c3; --c-yellow-b:#fde047;
+  --c-red:      #dc2626; --c-red-bg:   #fee2e2; --c-red-b:   #fca5a5;
+  --c-orange:   #ea580c; --c-orange-bg:#ffedd5; --c-orange-b:#fdba74;
+  --c-blue:     #2563eb; --c-blue-bg:  #dbeafe; --c-blue-b:  #93c5fd;
+  --c-gray:     #64748b; --c-gray-bg:  #f1f5f9; --c-gray-b:  #cbd5e1;
+  --c-purple:   #7c3aed; --c-purple-bg:#ede9fe; --c-purple-b:#c4b5fd;
+  --c-teal:     #0d9488; --c-teal-bg:  #ccfbf1; --c-teal-b:  #5eead4;
+  --sh1: 0 1px 3px rgba(12,29,61,.06), 0 1px 2px rgba(12,29,61,.04);
+  --sh2: 0 4px 16px rgba(12,29,61,.09), 0 2px 6px rgba(12,29,61,.05);
+  --sh3: 0 12px 36px rgba(12,29,61,.11), 0 4px 12px rgba(12,29,61,.06);
+  --sh4: 0 24px 56px rgba(12,29,61,.14), 0 8px 20px rgba(12,29,61,.08);
+  --r1: 10px; --r2: 14px; --r3: 18px; --r4: 22px; --r5: 28px; --rf: 9999px;
+  --fn: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --tf: 120ms ease; --tb: 200ms ease;
+}
+[data-theme="dark"] {
+  --c-bg:       #0b1222;
+  --c-bg2:      #0e1628;
+  --c-surf:     #131e34;
+  --c-surf2:    #182540;
+  --c-surf3:    #1c2d4c;
+  --c-bord:     #1e3258;
+  --c-bord2:    #2a4470;
+  --c-t1:       #e2eaf8;
+  --c-t2:       #8ab0d8;
+  --c-t3:       #4a6898;
+  --c-t4:       #2a4060;
+  --c-acc:      #3b82f6;
+  --c-acc2:     #2563eb;
+  --c-acc3:     rgba(59,130,246,.16);
+  --c-acc4:     #60a5fa;
+  --c-nav:      #080f1e;
+  --c-green-bg: rgba(22,163,74,.14);  --c-green-b:  #15803d;
+  --c-yellow-bg:rgba(202,138,4,.14);  --c-yellow-b: #a16207;
+  --c-red-bg:   rgba(220,38,38,.14);  --c-red-b:    #b91c1c;
+  --c-orange-bg:rgba(234,88,12,.14);  --c-orange-b: #c2410c;
+  --c-blue-bg:  rgba(37,99,235,.16);  --c-blue-b:   #1d4ed8;
+  --c-gray-bg:  #1a2840;              --c-gray-b:   #2a4060;
+  --c-purple-bg:rgba(124,58,237,.14); --c-purple-b: #6d28d9;
+  --c-teal-bg:  rgba(13,148,136,.14); --c-teal-b:   #0f766e;
+  --sh1: 0 1px 4px rgba(0,0,0,.28);
+  --sh2: 0 4px 20px rgba(0,0,0,.38);
+  --sh3: 0 12px 40px rgba(0,0,0,.48);
+  --sh4: 0 24px 60px rgba(0,0,0,.56);
+}
+
+/* ── reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--fn);font-size:13px;background:var(--c-bg);color:var(--c-t1);-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--c-bord2);border-radius:var(--rf)}
+
+/* ── typography ── */
+h1,h2,h3,h4{color:var(--c-t1);font-weight:800;letter-spacing:-.3px}
+
+/* ── topbar ── */
+.topbar{height:58px;background:var(--c-nav);display:flex;align-items:center;padding:0 22px;gap:14px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.tb-logo{display:flex;align-items:center;gap:11px}
+.tb-logo-icon{width:34px;height:34px;background:var(--c-acc);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 0 4px rgba(59,130,246,.22)}
+.tb-logo-icon svg{width:18px;height:18px;fill:#fff}
+.tb-brand{font-size:13px;font-weight:800;letter-spacing:2px;color:#fff;text-transform:uppercase}
+.tb-divider{width:1px;height:20px;background:rgba(255,255,255,.1);flex-shrink:0}
+.tb-station{font-size:11px;color:var(--c-nav-m)}
+.tb-spacer{flex:1}
+.tb-clock{font-size:11px;color:var(--c-nav-m);font-family:monospace;letter-spacing:.4px}
+.tb-notif{position:relative;width:36px;height:36px;border-radius:var(--r1);border:1px solid rgba(255,255,255,.1);background:none;cursor:pointer;color:var(--c-nav-m);display:flex;align-items:center;justify-content:center;transition:all var(--tb);flex-shrink:0}
+.tb-notif:hover{border-color:rgba(255,255,255,.25);color:var(--c-nav-t);background:rgba(255,255,255,.07)}
+.tb-notif svg{width:16px;height:16px;fill:currentColor}
+.tb-nbadge{position:absolute;top:-4px;right:-4px;width:17px;height:17px;border-radius:50%;background:#ef4444;font-size:8px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--c-nav)}
+.tb-user{display:flex;align-items:center;gap:9px;padding:5px 12px;border-radius:var(--r2);border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all var(--tb);position:relative}
+.tb-user:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.07)}
+.tb-avatar{width:30px;height:30px;border-radius:var(--r1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.tb-uname{font-size:11px;font-weight:700;color:var(--c-nav-t)}
+.tb-urole{font-size:9px;color:var(--c-nav-m);margin-top:1px}
+.tb-user-dropdown{display:none;position:absolute;top:calc(100% + 10px);right:0;background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r3);box-shadow:var(--sh3);padding:6px;min-width:224px;z-index:400;animation:drop-in .18s ease}
+@keyframes drop-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.tb-user-dropdown.show{display:block}
+.tud-info{padding:11px 13px 13px;border-bottom:1px solid var(--c-bord);margin-bottom:5px}
+.tud-name{font-size:13px;font-weight:700;color:var(--c-t1)}
+.tud-role{font-size:11px;color:var(--c-t2);margin-top:2px}
+.tud-email{font-size:10px;color:var(--c-t3);margin-top:3px;font-family:monospace}
+.tud-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 13px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--c-t2);border-radius:var(--r1);transition:all var(--tf);text-align:left;font-family:var(--fn)}
+.tud-btn:hover{background:var(--c-red-bg);color:var(--c-red)}
+.tud-btn svg{width:13px;height:13px;fill:currentColor}
+
+/* ── sidebar ── */
+.app-body{flex:1;display:flex;overflow:hidden}
+.sidebar{width:234px;min-width:234px;background:var(--c-surf);border-right:1px solid var(--c-bord);display:flex;flex-direction:column;flex-shrink:0;transition:background var(--tb),border-color var(--tb)}
+.sb-role-chip{margin:14px 13px 8px;padding:9px 14px;border-radius:var(--r2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px}
+.sb-nav{flex:1;padding:6px 0;overflow-y:auto}
+.sb-section{font-size:9px;font-weight:700;letter-spacing:1.6px;color:var(--c-t4);text-transform:uppercase;padding:14px 17px 5px}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 17px;font-size:12px;font-weight:500;color:var(--c-t2);cursor:pointer;border-left:3px solid transparent;border-radius:0 var(--r2) var(--r2) 0;margin:1px 9px 1px 0;transition:all var(--tf)}
+.sb-item:hover{background:var(--c-surf3);color:var(--c-t1)}
+.sb-item.active{background:var(--c-acc3);color:var(--c-acc);border-left-color:var(--c-acc);font-weight:700}
+[data-theme="dark"] .sb-item.active{background:rgba(59,130,246,.14)}
+.sb-item svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:800;border-radius:var(--rf);padding:2px 7px;background:var(--c-acc);color:#fff}
+.sb-badge.warn{background:#ef4444}
+.sb-bottom{padding:13px 17px;border-top:1px solid var(--c-bord)}
+.sb-bottom-time{font-size:10px;color:var(--c-t4);font-family:monospace}
+.content-area{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* ── shell ── */
+#appShell{display:none;flex-direction:column;height:100vh}
+#appShell.show{display:flex}
+.view{display:none}.view.active{display:block}
+
+/* ── page header ── */
+.page-hdr{margin-bottom:24px}
+.page-hdr h2{font-size:20px;font-weight:800;color:var(--c-t1);margin-bottom:4px;letter-spacing:-.4px}
+.page-hdr p{font-size:12px;color:var(--c-t3)}
+.hrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+
+/* ── grids ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.g21{display:grid;grid-template-columns:1fr 310px;gap:20px}
+.g31{display:grid;grid-template-columns:1fr 350px;gap:20px}
+
+/* ── cards ── */
+.card{background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r3);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh1);transition:box-shadow var(--tb),background var(--tb),border-color var(--tb)}
+.card:last-child{margin-bottom:0}
+.card:hover{box-shadow:var(--sh2)}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--c-bord);display:flex;align-items:center;justify-content:space-between;background:var(--c-surf2)}
+.card-head h3{font-size:13px;font-weight:700;color:var(--c-t1);display:flex;align-items:center;gap:8px}
+.card-body{padding:18px 20px}
+.card-body.p0{padding:0}
+
+/* ── stat cards ── */
+.stat-card,.sc{background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r3);padding:20px;box-shadow:var(--sh1);transition:all var(--tb);position:relative;overflow:hidden}
+.stat-card:hover,.sc:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.stat-card::before,.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--c-acc),var(--c-acc4));border-radius:var(--r3) var(--r3) 0 0;opacity:0;transition:opacity var(--tb)}
+.stat-card:hover::before,.sc:hover::before{opacity:1}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.sc-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.sc-icon,.st-icon{width:44px;height:44px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc-icon svg,.st-icon svg{width:22px;height:22px}
+.sc-val,.st-val{font-size:30px;font-weight:900;line-height:1;color:var(--c-t1);margin-bottom:4px;letter-spacing:-1.2px}
+.sc-label,.st-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--c-t3)}
+.sc-sub{font-size:11px;color:var(--c-t4);margin-top:4px}
+/* icon colors */
+.ic-b{background:var(--c-blue-bg)}.ic-b svg{fill:var(--c-acc)}
+.ic-g{background:var(--c-green-bg)}.ic-g svg{fill:var(--c-green)}
+.ic-r{background:var(--c-red-bg)}.ic-r svg{fill:var(--c-red)}
+.ic-o{background:var(--c-orange-bg)}.ic-o svg{fill:var(--c-orange)}
+.ic-y{background:var(--c-yellow-bg)}.ic-y svg{fill:var(--c-yellow)}
+.ic-p{background:var(--c-purple-bg)}.ic-p svg{fill:var(--c-purple)}
+.ic-t{background:var(--c-teal-bg)}.ic-t svg{fill:var(--c-teal)}
+.ic-gr{background:var(--c-gray-bg)}.ic-gr svg{fill:var(--c-gray)}
+/* delta badges */
+.sc-delta{font-size:11px;font-weight:700;border-radius:var(--rf);padding:3px 9px}
+.delta-up{background:var(--c-green-bg);color:var(--c-green)}
+.delta-dn{background:var(--c-red-bg);color:var(--c-red)}
+.delta-flat{background:var(--c-gray-bg);color:var(--c-gray)}
+
+/* ── badges ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--rf);font-size:10px;font-weight:700;white-space:nowrap;border:1px solid transparent}
+.bdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.b-g{background:var(--c-green-bg);color:var(--c-green);border-color:var(--c-green-b)}
+.b-y{background:var(--c-yellow-bg);color:var(--c-yellow);border-color:var(--c-yellow-b)}
+.b-r{background:var(--c-red-bg);color:var(--c-red);border-color:var(--c-red-b)}
+.b-b,.b-blue{background:var(--c-blue-bg);color:var(--c-blue);border-color:var(--c-blue-b)}
+.b-gr{background:var(--c-gray-bg);color:var(--c-gray);border-color:var(--c-gray-b)}
+.b-o{background:var(--c-orange-bg);color:var(--c-orange);border-color:var(--c-orange-b)}
+.b-p{background:var(--c-purple-bg);color:var(--c-purple);border-color:var(--c-purple-b)}
+
+/* ── buttons ── */
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:var(--r2);font-size:12px;font-weight:600;padding:9px 18px;cursor:pointer;border:none;transition:all var(--tf);white-space:nowrap;font-family:var(--fn);text-decoration:none;line-height:1}
+.btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.btn-primary{background:var(--c-t1);color:#fff}
+.btn-primary:hover{background:#1a3a6c;box-shadow:var(--sh2)}
+.btn-blue{background:var(--c-acc);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.28)}
+.btn-blue:hover{background:var(--c-acc2);box-shadow:0 6px 18px rgba(37,99,235,.38);transform:translateY(-1px)}
+.btn-blue:active{transform:none;box-shadow:0 2px 8px rgba(37,99,235,.28)}
+.btn-outline{background:var(--c-surf);border:1.5px solid var(--c-bord);color:var(--c-t2)}
+.btn-outline:hover{border-color:var(--c-acc);color:var(--c-acc);background:var(--c-acc3)}
+.btn-green{background:var(--c-green-bg);border:1.5px solid var(--c-green-b);color:var(--c-green)}
+.btn-green:hover{filter:brightness(.95)}
+.btn-red{background:var(--c-red-bg);border:1.5px solid var(--c-red-b);color:var(--c-red)}
+.btn-red:hover{filter:brightness(.95)}
+.btn-ghost{background:transparent;border:none;color:var(--c-t2);padding:7px 12px}
+.btn-ghost:hover{background:var(--c-surf3);color:var(--c-t1)}
+.btn-sm{padding:6px 13px;font-size:11px;border-radius:var(--r1)}
+.btn-xs{padding:3px 9px;font-size:10px;border-radius:var(--r1)}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important}
+
+/* ── tables ── */
+.tbl-wrap{overflow-x:auto}
+.tbl-scroll{max-height:380px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--c-surf2);padding:10px 15px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--c-t3);text-align:left;border-bottom:1px solid var(--c-bord);white-space:nowrap;position:sticky;top:0;z-index:2}
+tbody td{padding:11px 15px;border-bottom:1px solid var(--c-bord);vertical-align:middle;color:var(--c-t1)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--c-surf3)}
+
+/* ── form fields ── */
+.ff,.mf{margin-bottom:16px}
+.ff:last-child,.mf:last-child{margin-bottom:0}
+.ff label,.mf label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--c-t2);margin-bottom:7px}
+.ff input,.ff select,.ff textarea,
+.mf input,.mf select,.mf textarea{width:100%;border:1.5px solid var(--c-bord);border-radius:var(--r2);padding:10px 14px;font-size:13px;color:var(--c-t1);background:var(--c-surf2);outline:none;transition:all var(--tf);font-family:var(--fn)}
+.ff input:focus,.ff select:focus,.ff textarea:focus,
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--c-acc);background:var(--c-surf);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.ff textarea,.mf textarea{resize:vertical;min-height:80px;line-height:1.6}
+.ff-row,.mf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ── modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,15,34,.58);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r4);width:100%;max-width:500px;max-height:88vh;overflow-y:auto;box-shadow:var(--sh4);animation:modal-in .22s ease}
+@keyframes modal-in{from{transform:translateY(16px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--c-bord);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--c-surf);z-index:1;border-radius:var(--r4) var(--r4) 0 0}
+.modal-head h3{font-size:15px;font-weight:800;color:var(--c-t1)}
+.modal-close{width:32px;height:32px;border-radius:var(--r1);border:1.5px solid var(--c-bord);background:var(--c-surf2);cursor:pointer;color:var(--c-t3);display:flex;align-items:center;justify-content:center;transition:all var(--tf)}
+.modal-close:hover{border-color:var(--c-red);color:var(--c-red);background:var(--c-red-bg)}
+.modal-close svg{width:12px;height:12px;fill:currentColor}
+.modal-body{padding:22px 24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--c-bord);display:flex;justify-content:flex-end;gap:10px;background:var(--c-surf2);border-radius:0 0 var(--r4) var(--r4)}
+
+/* ── progress ── */
+.prog{height:7px;background:var(--c-surf3);border-radius:var(--rf);overflow:hidden}
+.prog-fill{height:100%;border-radius:var(--rf);transition:width .6s ease}
+.pf-b{background:linear-gradient(90deg,var(--c-acc),var(--c-acc4))}
+.pf-g{background:linear-gradient(90deg,#22c55e,#16a34a)}
+.pf-y{background:linear-gradient(90deg,#fbbf24,#d97706)}
+.pf-r{background:linear-gradient(90deg,#f87171,#dc2626)}
+.pf-o{background:linear-gradient(90deg,#fb923c,#ea580c)}
+
+/* ── sensor items ── */
+.sensor-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--c-bord)}
+.sensor-item:last-child{border-bottom:none}
+.s-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.s-ok{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+.s-warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.s-err{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.2);animation:s-pulse 1.4s infinite}
+@keyframes s-pulse{0%,100%{box-shadow:0 0 0 3px rgba(239,68,68,.2)}50%{box-shadow:0 0 0 7px rgba(239,68,68,.04)}}
+.s-name{flex:1;font-size:12px;font-weight:600;color:var(--c-t1)}
+.s-val{font-size:11px;color:var(--c-t2);font-family:monospace}
+
+/* ── event log ── */
+.ev-item{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--c-bord)}
+.ev-item:last-child{border-bottom:none}
+.ev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.ev-time{font-size:10px;color:var(--c-t3);font-family:monospace;white-space:nowrap;min-width:50px}
+.ev-msg{font-size:12px;color:var(--c-t1);flex:1;line-height:1.55}
+.ev-msg span,.ev-msg strong{font-weight:700;color:var(--c-acc)}
+
+/* ── zone cards ── */
+.zone-card{background:var(--c-surf2);border:1.5px solid var(--c-bord);border-radius:var(--r3);padding:15px 17px;display:flex;flex-direction:column;gap:8px;transition:all var(--tb)}
+.zone-card.safe{border-color:var(--c-green-b);background:var(--c-green-bg)}
+.zone-card.warn{border-color:var(--c-yellow-b);background:var(--c-yellow-bg)}
+.zone-card.alert{border-color:var(--c-red-b);background:var(--c-red-bg);animation:zb .9s infinite}
+@keyframes zb{0%,100%{opacity:1}50%{opacity:.75}}
+.zone-name{font-size:12px;font-weight:700;color:var(--c-t1)}
+.zone-status{font-size:11px;font-weight:700}
+.zone-card.safe .zone-status{color:var(--c-green)}
+.zone-card.warn .zone-status{color:var(--c-yellow)}
+.zone-card.alert .zone-status{color:var(--c-red)}
+.zone-meta{font-size:10px;color:var(--c-t3)}
+
+/* ── load bars ── */
+.load-item{margin-bottom:15px}
+.load-item:last-child{margin-bottom:0}
+.load-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.load-name{font-size:12px;font-weight:600;color:var(--c-t1)}
+.load-pct{font-size:12px;font-weight:800;color:var(--c-t1)}
+.load-level{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rf)}
+.ll-low{background:var(--c-green-bg);color:var(--c-green)}
+.ll-med{background:var(--c-yellow-bg);color:var(--c-yellow)}
+.ll-high{background:var(--c-orange-bg);color:var(--c-orange)}
+.ll-crit{background:var(--c-red-bg);color:var(--c-red)}
+
+/* ── toast ── */
+.toast,.ss-toast{position:fixed;bottom:24px;right:24px;background:var(--c-t1);color:#fff;border-radius:var(--r3);padding:13px 20px;font-size:12px;font-weight:600;box-shadow:var(--sh3);transform:translateY(16px);opacity:0;transition:all .32s cubic-bezier(.34,1.56,.64,1);z-index:900;display:flex;align-items:center;gap:10px;max-width:360px;border:1px solid rgba(255,255,255,.07)}
+.toast.show,.ss-toast.show{transform:translateY(0);opacity:1}
+.toast.ok,.ss-toast.ok{background:#14532d}
+.toast.err,.ss-toast.err{background:#7f1d1d}
+.toast svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+
+/* ── tabs ── */
+.tabs{display:flex;border-bottom:1px solid var(--c-bord);padding:0 20px;background:var(--c-surf2);flex-shrink:0}
+.tab{padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--c-t3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all var(--tf)}
+.tab:hover{color:var(--c-t1)}
+.tab.active{color:var(--c-acc);border-bottom-color:var(--c-acc)}
+
+/* ── settings ── */
+.settings-card{background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r3);overflow:hidden;margin-bottom:20px}
+.settings-card:last-child{margin-bottom:0}
+.settings-head{padding:14px 20px;border-bottom:1px solid var(--c-bord);background:var(--c-surf2)}
+.settings-head h3{font-size:13px;font-weight:700;color:var(--c-t1)}
+.settings-body{padding:20px}
+
+/* ── icon btn ── */
+.icon-btn{width:32px;height:32px;border-radius:var(--r1);border:1.5px solid var(--c-bord);background:var(--c-surf);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--c-t3);transition:all var(--tf);flex-shrink:0}
+.icon-btn:hover{border-color:var(--c-acc);color:var(--c-acc);background:var(--c-acc3)}
+.icon-btn.danger:hover{border-color:var(--c-red);color:var(--c-red);background:var(--c-red-bg)}
+.icon-btn svg{width:14px;height:14px;fill:currentColor}
+
+/* ── live chip ── */
+.live-chip{display:flex;align-items:center;gap:6px;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);border-radius:var(--rf);padding:4px 12px;font-size:10px;font-weight:800;color:#16a34a;letter-spacing:1px}
+[data-theme="dark"] .live-chip{background:rgba(22,163,74,.12)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:lp 2s infinite}
+@keyframes lp{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+
+/* ── system status ── */
+.ss-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--c-bord)}
+.ss-item:last-child{border-bottom:none}
+.ss-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ss-dot.ok{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+.ss-dot.warn{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.ss-dot.err{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.2)}
+.ss-name{flex:1;font-size:12px;font-weight:500;color:var(--c-t2)}
+.ss-val{font-size:12px;font-weight:700;color:var(--c-t1)}
+
+/* ── theme toggle fab ── */
+.theme-fab{position:fixed;bottom:22px;left:22px;z-index:8000;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--c-bord);background:var(--c-surf);color:var(--c-t2);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh2);transition:all .2s;font-family:var(--fn)}
+.theme-fab:hover{transform:scale(1.1);box-shadow:var(--sh3)}
+
+#loginScreen{position:relative;min-height:100vh;display:flex;flex-direction:column}
+#loginScreen::before{content:'';position:fixed;inset:0;z-index:0;background:linear-gradient(145deg,#060d1e 0%,#0c1d3d 40%,#0e2a55 70%,#06101e 100%)}
+#loginScreen::after{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(ellipse at 20% 20%,rgba(37,99,235,.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(59,130,246,.08) 0%,transparent 55%)}
+.login-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1}
+.login-card{background:var(--c-surf);border:1px solid var(--c-bord);border-radius:var(--r5);width:100%;max-width:420px;padding:42px;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04)}
+[data-theme="dark"] .login-card{background:#0d1a2e;border-color:#1a2e4c}
+.lc-brand{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+.lc-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--c-acc),var(--c-acc4));border-radius:var(--r2);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(37,99,235,.35)}
+.lc-icon svg{width:26px;height:26px;fill:#fff}
+.lc-title{font-size:16px;font-weight:800;color:var(--c-t1);letter-spacing:.1px}
+.lc-sub{font-size:10px;color:var(--c-t3);text-transform:uppercase;letter-spacing:1.1px;margin-top:3px}
+.lc-h{font-size:23px;font-weight:900;color:var(--c-t1);margin-bottom:6px;letter-spacing:-.5px}
+.lc-desc{font-size:13px;color:var(--c-t3);margin-bottom:28px;line-height:1.55}
+.lf-err{display:none;background:var(--c-red-bg);border:1px solid var(--c-red-b);border-radius:var(--r2);padding:12px 15px;font-size:12px;color:var(--c-red);margin-bottom:18px;align-items:center;gap:9px;line-height:1.4}
+.lf-err.show{display:flex}
+.lf-err svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+.lf-field{margin-bottom:20px}
+.lf-field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--c-t2);margin-bottom:8px}
+.lf-field input{width:100%;height:48px;border:1.5px solid var(--c-bord);border-radius:var(--r2);padding:0 15px;font-size:14px;color:var(--c-t1);background:var(--c-surf2);outline:none;transition:all var(--tf);font-family:var(--fn)}
+.lf-field input:focus{border-color:var(--c-acc);background:var(--c-surf);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:48px}
+.pass-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--c-t3);padding:3px;transition:color var(--tf)}
+.pass-toggle:hover{color:var(--c-acc)}
+.pass-toggle svg{width:18px;height:18px;fill:currentColor}
+.btn-login{width:100%;height:50px;background:linear-gradient(135deg,var(--c-acc),var(--c-acc4));color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--tf);font-family:var(--fn);box-shadow:0 4px 14px rgba(37,99,235,.35);letter-spacing:.2px}
+.btn-login:hover{box-shadow:0 8px 24px rgba(37,99,235,.45);transform:translateY(-1px)}
+.btn-login:active{transform:none}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.lc-hint{margin-top:22px;background:var(--c-acc3);border:1px solid var(--c-blue-b);border-radius:var(--r2);padding:14px 16px;font-size:12px;color:var(--c-acc);line-height:1.8}
+[data-theme="dark"] .lc-hint{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);color:var(--c-acc4)}
+.lc-hint strong{display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.9px;opacity:.8}
+
+#ssThemeBtn{display:none!important}
+
+/* ═════ FIX: единое оформление с панелями руководителя и администратора ═════ */
+#appShell.show{display:grid;grid-template-columns:234px 1fr;grid-template-rows:58px 1fr;height:100vh;overflow:hidden}
+#appShell .app-body{display:contents}
+#appShell .sidebar{grid-column:1;grid-row:1/3;background:var(--c-nav);border-right:1px solid rgba(255,255,255,.06);height:100vh;overflow-y:auto}
+#appShell .topbar{grid-column:2;grid-row:1;background:var(--c-surf);border-bottom:1px solid var(--c-bord);box-shadow:var(--sh1)}
+#appShell .content-area{grid-column:2;grid-row:2;overflow-y:auto;padding:24px 28px 70px}
+#appShell .topbar .tb-station{color:var(--c-t1);font-size:13px;font-weight:700}
+#appShell .topbar .tb-divider{display:none}
+#appShell .topbar .tb-clock{color:var(--c-t3)}
+#appShell .topbar .tb-notif{border-color:var(--c-bord);color:var(--c-t2)}
+#appShell .topbar .tb-notif:hover{background:var(--c-surf3);color:var(--c-t1);border-color:var(--c-bord2)}
+#appShell .topbar .tb-user{border-color:var(--c-bord)}
+#appShell .topbar .tb-user:hover{background:var(--c-surf3);border-color:var(--c-bord2)}
+#appShell .topbar .tb-uname{color:var(--c-t1)}
+#appShell .topbar .tb-urole{color:var(--c-t3)}
+.theme-btn{display:flex;align-items:center;gap:7px;height:36px;padding:0 13px;border-radius:var(--r1);border:1px solid var(--c-bord);background:var(--c-surf);color:var(--c-t2);font:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all var(--tf)}
+.theme-btn:hover{background:var(--c-surf3);color:var(--c-t1)}
+.theme-btn svg{width:15px;height:15px;fill:currentColor}
+/* логотип в боковом меню */
+.sidebar .tb-logo{padding:14px 17px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sidebar .tb-brand{color:#fff}
+.sidebar .sb-role-chip{margin:14px 13px 6px}
+.sidebar .sb-section{color:var(--c-nav-m)}
+.sidebar .sb-item{color:#b9c8e6}
+.sidebar .sb-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.sidebar .sb-item.active{background:rgba(59,130,246,.2);color:#fff;border-left-color:#3b82f6}
+[data-theme="dark"] .sidebar .sb-item.active{background:rgba(59,130,246,.2);color:#fff}
+.sidebar .sb-bottom{border-top:1px solid rgba(255,255,255,.07)}
+.sidebar .sb-bottom-time{color:var(--c-nav-m)}
+.theme-fab{left:252px}
+@media (max-width:760px){#appShell.show{grid-template-columns:1fr}#appShell .sidebar{display:none}#appShell .topbar,#appShell .content-area{grid-column:1}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="loginScreen">
+<div class="login-wrap">
+<div class="login-card">
+  <div class="lc-brand">
+    <div class="lc-icon"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+    <div>
+      <div class="lc-title">КТЖ · Смарт-станция</div>
+      <div class="lc-sub">Алматы-1 · Внутренняя система</div>
+    </div>
+  </div>
+  <h2 class="lc-h" style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:5px;letter-spacing:-.3px">Вход в систему</h2>
+  <p class="lc-desc" style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Используйте корпоративную почту и пароль</p>
+
+  <div class="lf-err" id="loginErr">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <span id="loginErrText">Неверная почта или пароль</span>
+  </div>
+
+  <form onsubmit="doLogin(event)">
+    <div class="lf-field">
+      <label>Корпоративная почта</label>
+      <input type="email" id="loginEmail" placeholder="user@station.kz" autocomplete="username"/>
+    </div>
+    <div class="lf-field">
+      <label>Пароль</label>
+      <div class="pass-wrap">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+        <button type="button" class="pass-toggle" onclick="togglePass()">
+          <svg id="eyeIco" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5C21.3 7.6 17 4.5 12 4.5zm0 12.5c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"/></svg>
+        </button>
+      </div>
+    </div>
+    <button type="submit" class="btn-login" id="loginBtn">Войти в систему</button>
+  </form>
+
+  <div class="lc-hint">
+    <strong>Тестовые аккаунты</strong>
+    duty@station.kz · pass: <b>duty123</b><br/>
+    tech@station.kz · pass: <b>tech123</b><br/>
+    security@station.kz · pass: <b>sec123</b>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="appShell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-logo">
+      <div class="tb-logo-icon"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+      <span class="tb-brand">КТЖ</span>
+    </div>
+    <div class="tb-divider"></div>
+    <span class="tb-station">Смарт-станция · Алматы-1</span>
+    <div class="tb-spacer"></div>
+    <span class="tb-clock" id="topClock">—</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Сменить тему">
+      <svg id="themeIco" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+      <span id="themeLabel">Тёмная</span>
+    </button>
+    <button class="tb-notif" title="Уведомления">
+      <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      <span class="tb-nbadge" id="nBadge">2</span>
+    </button>
+    <div class="tb-user" onclick="toggleDropdown()" id="tbUser">
+      <div class="tb-avatar" id="tbAvatar" style="background:#1a7fd4">У</div>
+      <div>
+        <div class="tb-uname" id="tbName">—</div>
+        <div class="tb-urole" id="tbRole">—</div>
+      </div>
+      <div class="tb-user-dropdown" id="userDropdown">
+        <div class="tud-info">
+          <div class="tud-name" id="ddName">—</div>
+          <div class="tud-role" id="ddRole">—</div>
+          <div class="tud-email" id="ddEmail">—</div>
+        </div>
+        <button class="tud-btn" onclick="doLogout()">
+          <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+          Выйти из системы
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-role-chip" id="sbRoleChip"></div>
+      <nav class="sb-nav" id="sbNav"></nav>
+      <div class="sb-bottom">
+        <div class="sb-bottom-time" id="sbShift">Смена: 08:00–20:00</div>
+      </div>
+    </aside>
+
+    <!-- VIEWS -->
+    <div class="content-area" id="contentArea">
+
+      <!-- ══ DUTY VIEWS ══ -->
+
+      <div class="view" id="v-duty-dashboard">
+        <div class="page-hdr">
+          <h2>Рабочее место дежурного</h2>
+          <p id="dutyDateTime"></p>
+        </div>
+        <div class="g4" style="margin-bottom:16px" id="dutyKpi"></div>
+        <div class="g21">
+          <div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Операции с поездами</h3>
+                <div style="display:flex;gap:7px">
+                  <button class="btn btn-blue btn-sm" onclick="openModal('m-confirm')">✓ Подтвердить</button>
+                  <button class="btn btn-outline btn-sm" onclick="openModal('m-event')">+ Событие</button>
+                </div>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr>
+                    <th>Поезд</th><th>Направление</th><th>Путь</th>
+                    <th>Операция</th><th>Время</th><th>Статус</th><th>Действие</th>
+                  </tr></thead>
+                  <tbody id="dutyOpsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div class="card-head">
+                <h3>Отклонения и нарушения</h3>
+                <button class="btn btn-red btn-sm" onclick="openModal('m-deviation')">⚠ Зарегистрировать</button>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Время</th><th>Поезд</th><th>Тип</th><th>Описание</th><th>Статус</th></tr></thead>
+                  <tbody id="dutyDeviationsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Журнал событий</h3></div>
+              <div class="card-body" id="dutyEventLog" style="max-height:460px;overflow-y:auto;padding:8px 14px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-duty-schedule">
+        <div class="page-hdr"><h2>Расписание движения</h2><p>Текущий день · Станция Алматы-1</p></div>
+        <div class="card">
+          <div class="card-head"><h3>Плановое расписание</h3></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Поезд</th><th>Маршрут</th><th>Прибытие</th><th>Отправление</th><th>Путь</th><th>Статус</th></tr></thead>
+              <tbody id="scheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-duty-log">
+        <div class="page-hdr"><h2>Журнал дежурного</h2><p>История событий и операций за смену</p></div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Все события смены</h3>
+            <button class="btn btn-outline btn-sm" onclick="openModal('m-event')">+ Добавить запись</button>
+          </div>
+          <div class="card-body" id="fullDutyLog" style="max-height:500px;overflow-y:auto;padding:8px 14px"></div>
+        </div>
+      </div>
+
+      <!-- ══ TECH VIEWS ══ -->
+
+      <div class="view" id="v-tech-dashboard">
+        <div class="page-hdr">
+          <h2>Техническая служба</h2>
+          <p>Контроль состояния оборудования и инфраструктуры</p>
+        </div>
+        <div class="g5" style="margin-bottom:16px" id="techKpi"></div>
+        <div class="g2">
+          <div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Оборудование станции</h3>
+                <button class="btn btn-outline btn-sm" onclick="openModal('m-maint')">+ Обслуживание</button>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr>
+                    <th>Наименование</th><th>Инв. №</th><th>Расположение</th>
+                    <th>Состояние</th><th>Последнее ТО</th><th>Следующее ТО</th>
+                  </tr></thead>
+                  <tbody id="techEquipBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div class="card-head">
+                <h3>Заявки на ремонт</h3>
+                <button class="btn btn-primary btn-sm" onclick="openModal('m-request')">+ Создать заявку</button>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr>
+                    <th>№ Заявки</th><th>Оборудование</th><th>Проблема</th>
+                    <th>Приоритет</th><th>Ответственный</th><th>Срок</th><th>Статус</th>
+                  </tr></thead>
+                  <tbody id="techRequestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Датчики и системы</h3>
+                <button class="btn btn-outline btn-sm" onclick="openModal('m-fault')">⚠ Неисправность</button>
+              </div>
+              <div class="card-body" id="techSensors" style="padding:8px 14px"></div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div class="card-head"><h3>История ТО</h3></div>
+              <div class="card-body" id="techHistory" style="padding:8px 14px;max-height:260px;overflow-y:auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-tech-requests">
+        <div class="page-hdr"><h2>Все заявки на ремонт</h2><p>Управление заявками технической службы</p></div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Реестр заявок</h3>
+            <button class="btn btn-primary btn-sm" onclick="openModal('m-request')">+ Создать заявку</button>
+          </div>
+          <div class="tbl-wrap" style="max-height:500px">
+            <table>
+              <thead><tr>
+                <th>№</th><th>Оборудование</th><th>Проблема</th>
+                <th>Приоритет</th><th>Ответственный</th><th>Создана</th><th>Срок</th><th>Статус</th>
+              </tr></thead>
+              <tbody id="allRequestsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-tech-sensors">
+        <div class="page-hdr"><h2>Датчики и мониторинг</h2><p>Состояние всех датчиков станции в реальном времени</p></div>
+        <div class="g3" id="sensorsDetailGrid"></div>
+      </div>
+
+      <!-- ══ SECURITY VIEWS ══ -->
+
+      <div class="view" id="v-sec-dashboard">
+        <div class="page-hdr">
+          <h2>Служба безопасности</h2>
+          <p>Мониторинг безопасности · Станция Алматы-1</p>
+        </div>
+        <div class="g5" style="margin-bottom:16px" id="secKpi"></div>
+        <div class="g21">
+          <div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Контроль зон станции</h3>
+                <button class="btn btn-outline btn-sm" onclick="openModal('m-zone-check')">✓ Проверить зону</button>
+              </div>
+              <div class="card-body">
+                <div class="g2" style="gap:12px" id="zonesGrid"></div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div class="card-head">
+                <h3>Последние инциденты</h3>
+                <button class="btn btn-red btn-sm" onclick="openModal('m-incident')">+ Зарегистрировать</button>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr>
+                    <th>Время</th><th>Место</th><th>Тип</th>
+                    <th>Уровень</th><th>Ответственный</th><th>Статус</th><th>Действие</th>
+                  </tr></thead>
+                  <tbody id="incidentsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Активные тревоги</h3>
+                <button class="btn btn-red btn-sm" onclick="openModal('m-alarm')">⚠ Обработать</button>
+              </div>
+              <div class="card-body" id="alarmsPanel" style="padding:8px 14px"></div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              <div class="card-head"><h3>Камеры и датчики</h3></div>
+              <div class="card-body" id="secSensors" style="padding:8px 14px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-sec-incidents">
+        <div class="page-hdr"><h2>Журнал инцидентов</h2><p>История всех зарегистрированных событий</p></div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Все инциденты</h3>
+            <button class="btn btn-red btn-sm" onclick="openModal('m-incident')">+ Зарегистрировать</button>
+          </div>
+          <div class="tbl-wrap" style="max-height:500px">
+            <table>
+              <thead><tr><th>Время</th><th>Место</th><th>Тип</th><th>Уровень</th><th>Описание</th><th>Ответственный</th><th>Статус</th></tr></thead>
+              <tbody id="allIncidentsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="v-sec-alarms">
+        <div class="page-hdr"><h2>Управление тревогами</h2><p>Активные и архивные тревоги системы безопасности</p></div>
+        <div class="g2" style="margin-bottom:16px">
+          <div class="stat-card">
+            <div class="sc-row"><div class="sc-icon ic-r"><svg viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div></div>
+            <div class="sc-val" id="activeAlarmCount">1</div><div class="sc-label">Активных тревог</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-row"><div class="sc-icon ic-g"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div></div>
+            <div class="sc-val">7</div><div class="sc-label">Закрыто за сегодня</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Активные тревоги</h3></div>
+          <div class="card-body" id="alarmsFullPanel" style="padding:8px 14px"></div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /app-body -->
+</div><!-- /appShell -->
+
+<!-- ═══════ MODALS ═══════ -->
+
+<!-- Подтвердить операцию -->
+<div class="modal-overlay" id="m-confirm" onclick="closeOnBg(event,'m-confirm')">
+<div class="modal">
+  <div class="modal-head"><h3>Подтверждение операции</h3><button class="modal-close" onclick="closeModal('m-confirm')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Номер поезда</label><select id="cf-train"><option>№101А</option><option>№205Б</option><option>№312В</option><option>№418Г</option></select></div>
+      <div class="mf"><label>Операция</label><select id="cf-op"><option>Прибытие</option><option>Отправление</option><option>Стоянка</option><option>Технический осмотр</option></select></div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Путь</label><select id="cf-track"><option>Путь №1</option><option>Путь №2</option><option>Путь №3</option><option>Путь №4</option><option>Путь №5</option><option>Путь №6</option></select></div>
+      <div class="mf"><label>Время факт.</label><input type="time" id="cf-time"/></div>
+    </div>
+    <div class="mf"><label>Примечание</label><textarea id="cf-note" placeholder="Дополнительная информация..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-confirm')">Отмена</button>
+    <button class="btn btn-blue" onclick="submitConfirm()">✓ Подтвердить</button>
+  </div>
+</div>
+</div>
+
+<!-- Зафиксировать событие -->
+<div class="modal-overlay" id="m-event" onclick="closeOnBg(event,'m-event')">
+<div class="modal">
+  <div class="modal-head"><h3>Фиксация события</h3><button class="modal-close" onclick="closeModal('m-event')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Тип события</label><select id="ev-type"><option>Прибытие поезда</option><option>Отправление поезда</option><option>Задержка</option><option>Нарушение регламента</option><option>Техническое событие</option><option>Прочее</option></select></div>
+      <div class="mf"><label>Объект</label><input type="text" id="ev-obj" placeholder="Поезд / Путь / Зона"/></div>
+    </div>
+    <div class="mf"><label>Описание события</label><textarea id="ev-desc" placeholder="Опишите событие подробно..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-event')">Отмена</button>
+    <button class="btn btn-primary" onclick="submitEvent()">Зафиксировать</button>
+  </div>
+</div>
+</div>
+
+<!-- Отклонение -->
+<div class="modal-overlay" id="m-deviation" onclick="closeOnBg(event,'m-deviation')">
+<div class="modal">
+  <div class="modal-head"><h3>Регистрация отклонения</h3><button class="modal-close" onclick="closeModal('m-deviation')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Поезд</label><input type="text" id="dv-train" placeholder="№ поезда"/></div>
+      <div class="mf"><label>Тип отклонения</label><select id="dv-type"><option>Задержка</option><option>Нарушение расписания</option><option>Нарушение регламента</option><option>Техническое нарушение</option></select></div>
+    </div>
+    <div class="mf"><label>Описание</label><textarea id="dv-desc" placeholder="Описание отклонения..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-deviation')">Отмена</button>
+    <button class="btn btn-red" onclick="submitDeviation()">⚠ Зарегистрировать</button>
+  </div>
+</div>
+</div>
+
+<!-- Создать заявку (тех) -->
+<div class="modal-overlay" id="m-request" onclick="closeOnBg(event,'m-request')">
+<div class="modal">
+  <div class="modal-head"><h3>Создать заявку на ремонт</h3><button class="modal-close" onclick="closeModal('m-request')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Оборудование</label><input type="text" id="rq-equip" placeholder="Название оборудования"/></div>
+      <div class="mf"><label>Приоритет</label><select id="rq-prio"><option>Критический</option><option>Высокий</option><option>Средний</option><option>Низкий</option></select></div>
+    </div>
+    <div class="mf"><label>Описание проблемы</label><textarea id="rq-desc" placeholder="Опишите неисправность..."></textarea></div>
+    <div class="mf-row">
+      <div class="mf"><label>Ответственный</label><input type="text" id="rq-resp" placeholder="ФИО специалиста"/></div>
+      <div class="mf"><label>Срок исполнения</label><input type="date" id="rq-date"/></div>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-request')">Отмена</button>
+    <button class="btn btn-primary" onclick="submitRequest()">Создать заявку</button>
+  </div>
+</div>
+</div>
+
+<!-- Неисправность -->
+<div class="modal-overlay" id="m-fault" onclick="closeOnBg(event,'m-fault')">
+<div class="modal">
+  <div class="modal-head"><h3>Регистрация неисправности</h3><button class="modal-close" onclick="closeModal('m-fault')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Оборудование / Датчик</label><input type="text" id="ft-equip" placeholder="Объект"/></div>
+      <div class="mf"><label>Расположение</label><input type="text" id="ft-loc" placeholder="Место"/></div>
+    </div>
+    <div class="mf"><label>Описание неисправности</label><textarea id="ft-desc" placeholder="Подробное описание..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-fault')">Отмена</button>
+    <button class="btn btn-red" onclick="submitFault()">Зарегистрировать</button>
+  </div>
+</div>
+</div>
+
+<!-- Обслуживание -->
+<div class="modal-overlay" id="m-maint" onclick="closeOnBg(event,'m-maint')">
+<div class="modal">
+  <div class="modal-head"><h3>Добавить обслуживание</h3><button class="modal-close" onclick="closeModal('m-maint')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Оборудование</label><input type="text" id="mn-equip" placeholder="Объект обслуживания"/></div>
+      <div class="mf"><label>Вид работ</label><select id="mn-type"><option>Плановое ТО</option><option>Внеплановое ТО</option><option>Ремонт</option><option>Замена</option><option>Диагностика</option></select></div>
+    </div>
+    <div class="mf"><label>Описание выполненных работ</label><textarea id="mn-desc" placeholder="Что было сделано..."></textarea></div>
+    <div class="mf"><label>Исполнитель</label><input type="text" id="mn-exec" placeholder="ФИО"/></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-maint')">Отмена</button>
+    <button class="btn btn-green" onclick="submitMaint()">Добавить запись</button>
+  </div>
+</div>
+</div>
+
+<!-- Инцидент -->
+<div class="modal-overlay" id="m-incident" onclick="closeOnBg(event,'m-incident')">
+<div class="modal">
+  <div class="modal-head"><h3>Регистрация инцидента</h3><button class="modal-close" onclick="closeModal('m-incident')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf-row">
+      <div class="mf"><label>Место</label><select id="inc-loc"><option>Платформа №1</option><option>Платформа №2</option><option>Зал ожидания</option><option>Кассовая зона</option><option>Вход/Выход</option><option>Служебная зона</option></select></div>
+      <div class="mf"><label>Тип инцидента</label><select id="inc-type"><option>Нарушение порядка</option><option>Подозрительный предмет</option><option>Медицинская помощь</option><option>Конфликтная ситуация</option><option>Попытка прохода</option><option>Прочее</option></select></div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Уровень угрозы</label><select id="inc-level"><option>Низкий</option><option>Средний</option><option>Высокий</option><option>Критический</option></select></div>
+      <div class="mf"><label>Ответственный</label><input type="text" id="inc-resp" placeholder="ФИО сотрудника"/></div>
+    </div>
+    <div class="mf"><label>Описание</label><textarea id="inc-desc" placeholder="Подробное описание инцидента..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-incident')">Отмена</button>
+    <button class="btn btn-red" onclick="submitIncident()">Зарегистрировать</button>
+  </div>
+</div>
+</div>
+
+<!-- Тревога -->
+<div class="modal-overlay" id="m-alarm" onclick="closeOnBg(event,'m-alarm')">
+<div class="modal">
+  <div class="modal-head"><h3>Обработка тревоги</h3><button class="modal-close" onclick="closeModal('m-alarm')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf"><label>Тревога</label><select id="al-id"><option>ТРЕВОГА-001 — Зал ожидания</option><option>ТРЕВОГА-002 — Платформа №2</option></select></div>
+    <div class="mf"><label>Принятые меры</label><textarea id="al-action" placeholder="Опишите принятые меры..."></textarea></div>
+    <div class="mf"><label>Результат</label><select id="al-result"><option>Ложная тревога</option><option>Инцидент локализован</option><option>Передано в полицию</option><option>Продолжается проверка</option></select></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-alarm')">Отмена</button>
+    <button class="btn btn-primary" onclick="submitAlarm()">Закрыть тревогу</button>
+  </div>
+</div>
+</div>
+
+<!-- Проверка зоны -->
+<div class="modal-overlay" id="m-zone-check" onclick="closeOnBg(event,'m-zone-check')">
+<div class="modal" style="max-width:380px">
+  <div class="modal-head"><h3>Проверка зоны</h3><button class="modal-close" onclick="closeModal('m-zone-check')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="modal-body">
+    <div class="mf"><label>Зона</label><select id="zc-zone"><option>Платформа №1</option><option>Платформа №2</option><option>Зал ожидания</option><option>Кассовая зона</option><option>Вход</option><option>Служебная зона</option></select></div>
+    <div class="mf"><label>Результат проверки</label><select id="zc-result"><option value="safe">Безопасно</option><option value="warn">Требует внимания</option><option value="alert">Тревога</option></select></div>
+    <div class="mf"><label>Комментарий</label><textarea id="zc-note" placeholder="Что обнаружено..."></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-outline" onclick="closeModal('m-zone-check')">Отмена</button>
+    <button class="btn btn-green" onclick="submitZoneCheck()">✓ Подтвердить проверку</button>
+  </div>
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<script>
+// ═══════════════════ ACCOUNTS ═══════════════════
+const ACCOUNTS = {
+  'duty@station.kz':     {pass:'duty123',  role:'duty',     name:'Ахметов Д.С.',    color:'#1a7fd4'},
+  'tech@station.kz':     {pass:'tech123',  role:'tech',     name:'Бекова А.Т.',     color:'#7c3aed'},
+  'security@station.kz': {pass:'sec123',   role:'security', name:'Джаксыбеков Е.Н.',color:'#e04646'},
+};
+
+// Also check admin-created employees from localStorage
+function findAccount(email, pass) {
+  // built-in
+  const acc = ACCOUNTS[email.toLowerCase()];
+  if (acc && acc.pass === pass) return acc;
+  // from admin panel
+  const stored = JSON.parse(localStorage.getItem('ss_employees') || '[]');
+  const emp = stored.find(e => e.email === email.toLowerCase() && e.password === pass);
+  if (emp) {
+    const roleMap = {
+      'Дежурный по станции':          'duty',
+      'Сотрудник технической службы': 'tech',
+      'Сотрудник службы безопасности':'security',
+    };
+    return {
+      pass: emp.password,
+      role: roleMap[emp.role] || emp.role,
+      name: emp.fio || emp.name,
+      color: '#0d9488',
+    };
+  }
+  return null;
+}
+
+// ═══════════════════ MENUS ═══════════════════
+const MENUS = {
+  duty: [
+    {section:'Дежурный', items:[
+      {id:'duty-dashboard', label:'Рабочее место',   icon:'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'},
+      {id:'duty-schedule',  label:'Расписание',      icon:'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z', badge:''},
+      {id:'duty-log',       label:'Журнал смены',    icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 16h8v2H8zm0-4h8v2H8zm0-4h4v2H8z'},
+    ]},
+  ],
+  tech: [
+    {section:'Техническая служба', items:[
+      {id:'tech-dashboard', label:'Панель',           icon:'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'},
+      {id:'tech-requests',  label:'Заявки на ремонт', icon:'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z', badge:'3'},
+      {id:'tech-sensors',   label:'Датчики',          icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z'},
+    ]},
+  ],
+  security: [
+    {section:'Служба безопасности', items:[
+      {id:'sec-dashboard',  label:'Панель',           icon:'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'},
+      {id:'sec-incidents',  label:'Журнал инцидентов',icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 16h8v2H8zm0-4h8v2H8zm0-4h4v2H8z', badge:'2'},
+      {id:'sec-alarms',     label:'Тревоги',          icon:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z', badge:'1'},
+    ]},
+  ],
+};
+
+const ROLE_LABELS = {
+  duty:'Дежурный по станции',
+  tech:'Сотрудник технической службы',
+  security:'Сотрудник службы безопасности',
+};
+const ROLE_CHIP_STYLE = {
+  duty:     'background:#e8f2fd;color:#1e40af',
+  tech:     'background:#f3eefe;color:#5b21b6',
+  security: 'background:#fff0f0;color:#991b1b',
+};
+
+// ═══════════════════ THEME ═══════════════════
+function loadTheme() {
+  const saved = localStorage.getItem('ss_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeBtn(saved);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = cur === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ss_theme', next);
+  updateThemeBtn(next);
+}
+function updateThemeBtn(theme) {
+  const ico = document.getElementById('themeIco');
+  const lbl = document.getElementById('themeLabel');
+  if (!ico || !lbl) return;
+  if (theme === 'dark') {
+    ico.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a1 1 0 0 0-1.41 0 1 1 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 0 1 1 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a1 1 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0 0-1.41 1 1 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a1 1 0 0 0 0-1.41 1 1 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+    lbl.textContent = 'Светлая';
+  } else {
+    ico.innerHTML = '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>';
+    lbl.textContent = 'Тёмная';
+  }
+}
+loadTheme();
+
+// ═══════════════════ STATE ═══════════════════
+let currentUser = null;
+
+// ═══════════════════ LOGIN ═══════════════════
+function togglePass() {
+  const i = document.getElementById('loginPass');
+  i.type = i.type==='password' ? 'text' : 'password';
+}
+
+function doLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPass').value;
+  const err   = document.getElementById('loginErr');
+  const btn   = document.getElementById('loginBtn');
+  err.classList.remove('show');
+  if (!email || !pass) {
+    document.getElementById('loginErrText').textContent = 'Заполните все поля';
+    err.classList.add('show'); return;
+  }
+  btn.textContent = 'Проверка...'; btn.disabled = true;
+  setTimeout(() => {
+    const acc = findAccount(email, pass);
+    btn.textContent = 'Войти в систему'; btn.disabled = false;
+    if (!acc) {
+      document.getElementById('loginErrText').textContent = 'Неверная корпоративная почта или пароль';
+      err.classList.add('show'); return;
+    }
+    currentUser = { ...acc, email };
+    launchApp();
+  }, 700);
+}
+
+function launchApp() {
+  const _lg=document.querySelector('.topbar .tb-logo'), _sb=document.querySelector('.sidebar');
+  if(_lg&&_sb) _sb.insertBefore(_lg,_sb.firstChild);
+  document.getElementById('loginScreen').style.display = 'none';
+  const app = document.getElementById('appShell');
+  app.classList.add('show');
+  buildUI();
+  startClock();
+  renderRole();
+}
+
+// ═══════════════════ BUILD UI ═══════════════════
+function buildUI() {
+  const u = currentUser;
+  // topbar
+  const initials = u.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('tbAvatar').textContent   = initials;
+  document.getElementById('tbAvatar').style.background = u.color;
+  document.getElementById('tbName').textContent     = u.name.split(' ')[0] + ' ' + (u.name.split(' ')[1]?u.name.split(' ')[1][0]+'.':'');
+  document.getElementById('tbRole').textContent     = u.position || ROLE_LABELS[u.role];
+  document.getElementById('ddName').textContent     = u.name;
+  document.getElementById('ddRole').textContent     = u.position || ROLE_LABELS[u.role];
+  document.getElementById('ddEmail').textContent    = u.email;
+  // sidebar chip
+  document.getElementById('sbRoleChip').textContent = ROLE_LABELS[u.role];
+  document.getElementById('sbRoleChip').style.cssText += ';' + ROLE_CHIP_STYLE[u.role];
+  // nav
+  const nav = document.getElementById('sbNav');
+  nav.innerHTML = '';
+  (MENUS[u.role]||[]).forEach(group => {
+    const sec = document.createElement('div');
+    sec.className = 'sb-section'; sec.textContent = group.section;
+    nav.appendChild(sec);
+    group.items.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'sb-item';
+      el.id = 'nav-' + item.id;
+      el.setAttribute('onclick', `navTo('${item.id}')`);
+      el.innerHTML = `<svg viewBox="0 0 24 24"><path d="${item.icon}"/></svg>${item.label}`
+        + (item.badge ? `<span class="sb-badge" style="background:${u.color === '#e04646' ? '#e04646' : '#1a7fd4'};color:#fff">${item.badge}</span>` : '');
+      nav.appendChild(el);
+    });
+  });
+}
+
+function renderRole() {
+  const r = currentUser.role;
+  if (r === 'duty')     { renderDuty();     navTo('duty-dashboard'); }
+  if (r === 'tech')     { renderTech();     navTo('tech-dashboard'); }
+  if (r === 'security') { renderSecurity(); navTo('sec-dashboard'); }
+}
+
+// ═══════════════════ NAVIGATE ═══════════════════
+function navTo(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const v = document.getElementById('v-' + id);
+  if (v) v.classList.add('active');
+  const ni = document.getElementById('nav-' + id);
+  if (ni) ni.classList.add('active');
+}
+
+// ═══════════════════ CLOCK ═══════════════════
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const s = now.toLocaleDateString('ru-RU') + ' · ' + now.toLocaleTimeString('ru-RU');
+    document.getElementById('topClock').textContent = s;
+    const dutyDT = document.getElementById('dutyDateTime');
+    if (dutyDT) dutyDT.textContent = s;
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ═══════════════════ DUTY ═══════════════════
+const DUTY_OPS = [
+  {train:'№101А',dir:'Алматы→Астана',   track:'Путь №1',op:'Прибытие',  time:'09:05',status:'pending'},
+  {train:'№205Б',dir:'Алматы→Шымкент', track:'Путь №2',op:'Стоянка',   time:'09:12',status:'ok'},
+  {train:'№312В',dir:'Алматы→Актобе',  track:'Путь №3',op:'Отправление',time:'09:18',status:'pending'},
+  {train:'№418Г',dir:'Алматы→Тараз',   track:'Путь №4',op:'Прибытие',  time:'09:30',status:'ok'},
+  {train:'№501Д',dir:'Алматы→Семей',   track:'Путь №5',op:'Тех. осмотр',time:'09:40',status:'inprogress'},
+  {train:'№604Е',dir:'Алматы→Усть-К.', track:'Путь №6',op:'Ожидание',  time:'09:55',status:'delayed'},
+];
+const DUTY_DEVS = [
+  {time:'08:47',train:'№205Б',type:'Задержка',   desc:'Опоздание на 7 минут',              status:'active'},
+  {time:'07:30',train:'№088З',type:'Нарушение',  desc:'Превышение времени стоянки',        status:'closed'},
+  {time:'06:15',train:'№002В',type:'Тех. нарушение',desc:'Неисправность сигнализации',     status:'closed'},
+];
+let dutyEvents = [
+  {time:'09:18',type:'info',  msg:'Поезд <span>№312В</span> подготовлен к отправлению'},
+  {time:'09:12',type:'ok',    msg:'Операция подтверждена: прибытие <span>№205Б</span>'},
+  {time:'09:05',type:'warn',  msg:'Задержка поезда <span>№205Б</span> — 7 минут'},
+  {time:'08:55',type:'info',  msg:'Путь №3 освобождён'},
+  {time:'08:47',type:'err',   msg:'Зарегистрировано отклонение: <span>№205Б</span>'},
+  {time:'08:30',type:'ok',    msg:'Смена принята. Все системы в норме.'},
+];
+const SCHEDULE = [
+  {train:'№001А',route:'Алматы–Астана',   arr:'08:00',dep:'08:15',track:'1',status:'done'},
+  {train:'№015Б',route:'Алматы–Шымкент', arr:'08:30',dep:'08:45',track:'2',status:'done'},
+  {train:'№101А',route:'Алматы–Астана',   arr:'09:05',dep:'09:20',track:'1',status:'current'},
+  {train:'№205Б',route:'Алматы–Шымкент', arr:'09:12',dep:'09:30',track:'2',status:'delayed'},
+  {train:'№312В',route:'Алматы–Актобе',   arr:'09:15',dep:'09:40',track:'3',status:'current'},
+  {train:'№418Г',route:'Алматы–Тараз',    arr:'09:30',dep:'09:50',track:'4',status:'plan'},
+  {train:'№501Д',route:'Алматы–Семей',    arr:'09:40',dep:'10:00',track:'5',status:'plan'},
+  {train:'№604Е',route:'Алматы–Усть-К.',  arr:'09:55',dep:'10:15',track:'6',status:'plan'},
+];
+
+function renderDuty() {
+  // KPI
+  const kpis = [
+    {val:6,  label:'Поезда на станции',      ic:'ic-b', icon:'M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z'},
+    {val:2,  label:'Ожидают подтверждения',  ic:'ic-o', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'},
+    {val:3,  label:'Выполняемые операции',   ic:'ic-g', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'},
+    {val:3,  label:'Отклонения',             ic:'ic-r', icon:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'},
+  ];
+  document.getElementById('dutyKpi').innerHTML = kpis.map(k=>statCard(k)).join('');
+
+  // Ops table
+  document.getElementById('dutyOpsBody').innerHTML = DUTY_OPS.map(o => {
+    const sb = o.status==='ok'?'b-g':o.status==='pending'?'b-y':o.status==='inprogress'?'b-b':'b-r';
+    const sl = o.status==='ok'?'Выполнено':o.status==='pending'?'Ожидает':o.status==='inprogress'?'В процессе':'Задержка';
+    const btn = o.status==='pending'
+      ? `<button class="btn btn-blue btn-xs" onclick="confirmOp(this,'${o.train}')">Подтвердить</button>`
+      : `<span style="color:var(--c-t4);font-size:10px">—</span>`;
+    return `<tr>
+      <td><strong>${o.train}</strong></td>
+      <td>${o.dir}</td><td>${o.track}</td><td>${o.op}</td>
+      <td style="font-family:monospace">${o.time}</td>
+      <td><span class="badge ${sb}"><span class="bdot"></span>${sl}</span></td>
+      <td>${btn}</td>
+    </tr>`;
+  }).join('');
+
+  // Deviations
+  document.getElementById('dutyDeviationsBody').innerHTML = DUTY_DEVS.map(d => `
+    <tr>
+      <td style="font-family:monospace;color:var(--c-t3)">${d.time}</td>
+      <td><strong>${d.train}</strong></td>
+      <td><span class="badge b-o">${d.type}</span></td>
+      <td>${d.desc}</td>
+      <td><span class="badge ${d.status==='active'?'b-r':'b-gr'}">${d.status==='active'?'Активно':'Закрыто'}</span></td>
+    </tr>`).join('');
+
+  renderDutyEventLog();
+
+  // Schedule
+  document.getElementById('scheduleBody').innerHTML = SCHEDULE.map(s => {
+    const m = {done:'b-gr',current:'b-b',delayed:'b-r',plan:'b-g'};
+    const l = {done:'Выполнено',current:'Текущий',delayed:'Задержка',plan:'По плану'};
+    return `<tr>
+      <td><strong>${s.train}</strong></td>
+      <td>${s.route}</td>
+      <td style="font-family:monospace">${s.arr}</td>
+      <td style="font-family:monospace">${s.dep}</td>
+      <td>№${s.track}</td>
+      <td><span class="badge ${m[s.status]}">${l[s.status]}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDutyEventLog() {
+  const html = dutyEvents.map(e => `
+    <div class="ev-item">
+      <span class="ev-dot" style="background:${e.type==='ok'?'#22c55e':e.type==='warn'?'#f59e0b':e.type==='err'?'#e04646':'#1a7fd4'}"></span>
+      <span class="ev-time">${e.time}</span>
+      <span class="ev-msg">${e.msg}</span>
+    </div>`).join('');
+  const el1 = document.getElementById('dutyEventLog');
+  const el2 = document.getElementById('fullDutyLog');
+  if (el1) el1.innerHTML = html || '<div style="color:var(--c-t4);padding:10px;font-size:11px">Нет событий</div>';
+  if (el2) el2.innerHTML = html || '<div style="color:var(--c-t4);padding:10px;font-size:11px">Нет событий</div>';
+}
+
+function confirmOp(btn, train) {
+  btn.closest('tr').querySelector('td:nth-child(6) .badge').className = 'badge b-g';
+  btn.closest('tr').querySelector('td:nth-child(6) .badge').innerHTML = '<span class="bdot"></span>Выполнено';
+  btn.replaceWith(document.createTextNode('—'));
+  const t = now();
+  dutyEvents.unshift({time:t, type:'ok', msg:`Операция подтверждена: <span>${train}</span>`});
+  renderDutyEventLog();
+  showToast('Операция подтверждена: ' + train, 'ok');
+}
+
+// ═══════════════════ TECH ═══════════════════
+const TECH_EQUIP = [
+  {name:'Стрелочный перевод №1', inv:'SP-001',loc:'Путь №1–2', state:'ok',    lastTO:'15.09.2026',nextTO:'15.12.2026'},
+  {name:'Стрелочный перевод №2', inv:'SP-002',loc:'Путь №3–4', state:'ok',    lastTO:'10.09.2026',nextTO:'10.12.2026'},
+  {name:'Светофор входной А',    inv:'SF-010',loc:'Вход А',    state:'warn',  lastTO:'01.10.2026',nextTO:'01.01.2027'},
+  {name:'Светофор выходной Б',   inv:'SF-011',loc:'Выход Б',   state:'ok',    lastTO:'01.10.2026',nextTO:'01.01.2027'},
+  {name:'Датчик пути №3',        inv:'DS-030',loc:'Путь №3',   state:'err',   lastTO:'20.08.2026',nextTO:'Просрочено'},
+  {name:'Камера платф. №1',      inv:'CM-101',loc:'Платф. №1', state:'ok',    lastTO:'28.09.2026',nextTO:'28.12.2026'},
+  {name:'Система объявлений',    inv:'PA-001',loc:'Централ.',  state:'warn',  lastTO:'15.09.2026',nextTO:'15.12.2026'},
+  {name:'Шлагбаум переезд',      inv:'BM-001',loc:'Переезд',   state:'ok',    lastTO:'05.10.2026',nextTO:'05.01.2027'},
+];
+let TECH_REQUESTS = [
+  {id:'ЗА-0041',equip:'Датчик пути №3',   prob:'Отсутствует сигнал',        prio:'Критический',resp:'Бекова А.Т.',  date:'02.10.2026',status:'open',   created:'01.10.2026'},
+  {id:'ЗА-0038',equip:'Светофор вх. А',   prob:'Мигание — нестаб. питание', prio:'Высокий',    resp:'Нуров С.В.',   date:'03.10.2026',status:'work',   created:'30.09.2026'},
+  {id:'ЗА-0035',equip:'Система объявл.',  prob:'Помехи в зале ожидания',    prio:'Средний',    resp:'Бекова А.Т.',  date:'05.10.2026',status:'work',   created:'29.09.2026'},
+  {id:'ЗА-0032',equip:'Стрел. перевод №3',prob:'Плановая замена пружины',   prio:'Низкий',     resp:'Ахмет М.Б.',   date:'10.10.2026',status:'plan',   created:'28.09.2026'},
+  {id:'ЗА-0029',equip:'Камера платф. №2', prob:'Угол обзора — настройка',   prio:'Низкий',     resp:'Нуров С.В.',   date:'07.10.2026',status:'done',   created:'25.09.2026'},
+];
+const TECH_SENSORS = [
+  {name:'Датчик пути №1',      state:'ok',   val:'Норма'},
+  {name:'Датчик пути №2',      state:'ok',   val:'Норма'},
+  {name:'Датчик пути №3',      state:'err',  val:'Нет сигнала'},
+  {name:'Датчик пути №4',      state:'ok',   val:'Норма'},
+  {name:'Датчик температуры А',state:'ok',   val:'+18°C'},
+  {name:'Датчик температуры Б',state:'warn', val:'+28°C ⚠'},
+  {name:'Датчик дыма — зал',   state:'ok',   val:'Норма'},
+  {name:'Питание осн. сеть',   state:'ok',   val:'220V / 50Hz'},
+  {name:'ИБП (резерв)',         state:'ok',   val:'100% заряд'},
+  {name:'Управление стрелками', state:'ok',   val:'Авто'},
+];
+let techHistory = [
+  {time:'01.10.2026 09:00',equip:'Стрел. перев. №1',work:'Плановое ТО',exec:'Ахмет М.Б.'},
+  {time:'30.09.2026 14:00',equip:'Камера платф. №1',work:'Чистка и настройка',exec:'Нуров С.В.'},
+  {time:'28.09.2026 10:30',equip:'Светофор выхд. Б', work:'Замена лампы',exec:'Бекова А.Т.'},
+  {time:'25.09.2026 08:00',equip:'Шлагбаум переезд', work:'Плановое ТО',exec:'Ахмет М.Б.'},
+];
+
+function renderTech() {
+  const kpis = [
+    {val:8,  label:'Всего оборудования',   ic:'ic-b', icon:'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'},
+    {val:5,  label:'Исправно',             ic:'ic-g', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'},
+    {val:2,  label:'Требует проверки',     ic:'ic-o', icon:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'},
+    {val:1,  label:'Неисправно',           ic:'ic-r', icon:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'},
+    {val:3,  label:'Открытых заявок',      ic:'ic-p', icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 16h8v2H8zm0-4h8v2H8zm0-4h4v2H8z'},
+  ];
+  document.getElementById('techKpi').innerHTML = kpis.map(k=>statCard(k)).join('');
+
+  // Equipment
+  document.getElementById('techEquipBody').innerHTML = TECH_EQUIP.map(e => {
+    const sb = e.state==='ok'?'b-g':e.state==='warn'?'b-y':'b-r';
+    const sl = e.state==='ok'?'Исправно':e.state==='warn'?'Проверить':'Неисправно';
+    return `<tr>
+      <td><strong>${e.name}</strong></td>
+      <td style="font-family:monospace;font-size:11px">${e.inv}</td>
+      <td>${e.loc}</td>
+      <td><span class="badge ${sb}"><span class="bdot"></span>${sl}</span></td>
+      <td style="font-size:11px;color:var(--c-t3)">${e.lastTO}</td>
+      <td style="font-size:11px;color:${e.nextTO==='Просрочено'?'#e04646':'#1a2535'};font-weight:${e.nextTO==='Просрочено'?700:400}">${e.nextTO}</td>
+    </tr>`;
+  }).join('');
+
+  renderTechRequests();
+  renderSensors();
+  renderTechHistory();
+}
+
+function renderTechRequests() {
+  const prioColor = {Критический:'b-r',Высокий:'b-o',Средний:'b-y',Низкий:'b-gr'};
+  const statColor = {open:'b-r',work:'b-b',plan:'b-y',done:'b-g'};
+  const statLabel = {open:'Открыта',work:'В работе',plan:'Запланирована',done:'Выполнена'};
+  const rows = TECH_REQUESTS.map(r => `<tr>
+    <td style="font-family:monospace;font-size:11px">${r.id}</td>
+    <td><strong>${r.equip}</strong></td>
+    <td>${r.prob}</td>
+    <td><span class="badge ${prioColor[r.prio]}">${r.prio}</span></td>
+    <td>${r.resp}</td>
+    <td style="font-size:11px">${r.date}</td>
+    <td><span class="badge ${statColor[r.status]}">${statLabel[r.status]}</span></td>
+  </tr>`).join('');
+  const b1 = document.getElementById('techRequestsBody');
+  const b2 = document.getElementById('allRequestsBody');
+  if (b1) b1.innerHTML = rows;
+  if (b2) {
+    document.getElementById('allRequestsBody').innerHTML = TECH_REQUESTS.map(r => `<tr>
+      <td style="font-family:monospace;font-size:11px">${r.id}</td>
+      <td><strong>${r.equip}</strong></td>
+      <td>${r.prob}</td>
+      <td><span class="badge ${prioColor[r.prio]}">${r.prio}</span></td>
+      <td>${r.resp}</td>
+      <td style="font-size:11px;color:var(--c-t3)">${r.created}</td>
+      <td style="font-size:11px">${r.date}</td>
+      <td><span class="badge ${statColor[r.status]}">${statLabel[r.status]}</span></td>
+    </tr>`).join('');
+  }
+}
+
+function renderSensors() {
+  const html = TECH_SENSORS.map(s => `
+    <div class="sensor-item">
+      <div class="s-dot ${s.state==='ok'?'s-ok':s.state==='warn'?'s-warn':'s-err'}"></div>
+      <span class="s-name">${s.name}</span>
+      <span class="s-val">${s.val}</span>
+    </div>`).join('');
+  const el1 = document.getElementById('techSensors');
+  if (el1) el1.innerHTML = html;
+
+  // sensors detail
+  const dg = document.getElementById('sensorsDetailGrid');
+  if (dg) {
+    const groups = [
+      {title:'Датчики пути',      items: TECH_SENSORS.slice(0,4)},
+      {title:'Климат и пожарные', items: TECH_SENSORS.slice(4,7)},
+      {title:'Питание и системы', items: TECH_SENSORS.slice(7)},
+    ];
+    dg.innerHTML = groups.map(g => `
+      <div class="card">
+        <div class="card-head"><h3>${g.title}</h3></div>
+        <div class="card-body" style="padding:8px 14px">
+          ${g.items.map(s=>`
+          <div class="sensor-item">
+            <div class="s-dot ${s.state==='ok'?'s-ok':s.state==='warn'?'s-warn':'s-err'}"></div>
+            <span class="s-name">${s.name}</span>
+            <span class="s-val">${s.val}</span>
+          </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+}
+
+function renderTechHistory() {
+  const el = document.getElementById('techHistory');
+  if (!el) return;
+  el.innerHTML = techHistory.map(h => `
+    <div class="ev-item">
+      <span class="ev-dot" style="background:#22c55e"></span>
+      <span class="ev-time" style="min-width:110px">${h.time}</span>
+      <span class="ev-msg"><span>${h.equip}</span> — ${h.work} · ${h.exec}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════ SECURITY ═══════════════════
+const ZONES = [
+  {id:'z1',name:'Платформа №1',  status:'safe',  last:'09:15',cam:3,people:42},
+  {id:'z2',name:'Платформа №2',  status:'warn',  last:'09:10',cam:3,people:68},
+  {id:'z3',name:'Зал ожидания',  status:'warn',  last:'09:00',cam:5,people:127},
+  {id:'z4',name:'Кассовая зона', status:'safe',  last:'09:18',cam:2,people:31},
+  {id:'z5',name:'Вход/Выход',    status:'safe',  last:'09:20',cam:4,people:55},
+  {id:'z6',name:'Служебная зона',status:'safe',  last:'09:05',cam:2,people:8},
+];
+const ZONE_STATUS_LABEL = {safe:'🟢 Безопасно',warn:'🟡 Требует внимания',alert:'🔴 Тревога'};
+let INCIDENTS = [
+  {time:'09:05',loc:'Зал ожидания',    type:'Нарушение порядка',   level:'Средний',   resp:'Джаксыбеков Е.Н.',status:'active'},
+  {time:'08:42',loc:'Платформа №2',    type:'Подозрит. предмет',   level:'Высокий',   resp:'Мамытов Р.А.',    status:'closed'},
+  {time:'07:55',loc:'Кассовая зона',   type:'Конфликт',            level:'Низкий',    resp:'Джаксыбеков Е.Н.',status:'closed'},
+  {time:'07:20',loc:'Вход',            type:'Попытка прохода',     level:'Средний',   resp:'Мамытов Р.А.',    status:'closed'},
+];
+const ALARMS = [
+  {id:'ТРЕВОГА-001',zone:'Зал ожидания', type:'Переполненность',  time:'09:00',level:'medium'},
+];
+const SEC_SENSORS = [
+  {name:'Камера Платф. №1 (×3)',  state:'ok',  val:'Онлайн'},
+  {name:'Камера Платф. №2 (×3)',  state:'ok',  val:'Онлайн'},
+  {name:'Камера Зал ожид. (×5)',  state:'ok',  val:'Онлайн'},
+  {name:'Датчик движения — вход', state:'ok',  val:'Активен'},
+  {name:'Датчик металла — вход',  state:'warn',val:'Калибровка'},
+  {name:'Кнопка тревоги — платф.',state:'ok',  val:'Готова'},
+  {name:'Система контроля доступа',state:'ok', val:'Норма'},
+];
+
+function renderSecurity() {
+  const kpis = [
+    {val:2,  label:'Инциденты сегодня',    ic:'ic-r', icon:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'},
+    {val:1,  label:'Активные тревоги',     ic:'ic-o', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'},
+    {val:4,  label:'Проверенных зон',      ic:'ic-g', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'},
+    {val:2,  label:'Зоны внимания',        ic:'ic-o', icon:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'},
+    {val:17, label:'Событий безопасности', ic:'ic-b', icon:'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'},
+  ];
+  document.getElementById('secKpi').innerHTML = kpis.map(k=>statCard(k)).join('');
+
+  // Zones
+  document.getElementById('zonesGrid').innerHTML = ZONES.map(z => `
+    <div class="zone-card ${z.status}" id="zcard-${z.id}">
+      <div class="zone-name">${z.name}</div>
+      <div class="zone-status">${ZONE_STATUS_LABEL[z.status]}</div>
+      <div class="zone-meta">Камер: ${z.cam} · Людей: ~${z.people}</div>
+      <div class="zone-meta">Посл. проверка: ${z.last}</div>
+      <button class="btn btn-outline btn-xs" style="margin-top:4px" onclick="quickCheckZone('${z.id}')">Проверить</button>
+    </div>`).join('');
+
+  renderIncidents();
+  renderAlarms();
+  renderSecSensors();
+}
+
+function renderIncidents() {
+  const ll = {Низкий:'b-g',Средний:'b-y',Высокий:'b-o',Критический:'b-r'};
+  const rows = INCIDENTS.map(i => `<tr>
+    <td style="font-family:monospace;color:var(--c-t3)">${i.time}</td>
+    <td>${i.loc}</td>
+    <td>${i.type}</td>
+    <td><span class="badge ${ll[i.level]}">${i.level}</span></td>
+    <td>${i.resp}</td>
+    <td><span class="badge ${i.status==='active'?'b-r':'b-gr'}">${i.status==='active'?'Активно':'Закрыто'}</span></td>
+    <td>${i.status==='active'?`<button class="btn btn-xs btn-red" onclick="closeIncident(this)">Закрыть</button>`:'—'}</td>
+  </tr>`).join('');
+  const b1 = document.getElementById('incidentsBody');
+  const b2 = document.getElementById('allIncidentsBody');
+  if (b1) b1.innerHTML = rows;
+  if (b2) {
+    document.getElementById('allIncidentsBody').innerHTML = INCIDENTS.map(i => `<tr>
+      <td style="font-family:monospace;color:var(--c-t3)">${i.time}</td>
+      <td>${i.loc}</td>
+      <td>${i.type}</td>
+      <td><span class="badge ${ll[i.level]}">${i.level}</span></td>
+      <td style="max-width:160px;font-size:11px">—</td>
+      <td>${i.resp}</td>
+      <td><span class="badge ${i.status==='active'?'b-r':'b-gr'}">${i.status==='active'?'Активно':'Закрыто'}</span></td>
+    </tr>`).join('');
+  }
+}
+
+function closeIncident(btn) {
+  const tr = btn.closest('tr');
+  tr.querySelectorAll('td')[5].innerHTML = '<span class="badge b-gr">Закрыто</span>';
+  btn.replaceWith(document.createTextNode('—'));
+  showToast('Инцидент закрыт', 'ok');
+}
+
+function renderAlarms() {
+  const html = ALARMS.length === 0
+    ? '<div style="color:var(--c-t4);font-size:11px;padding:10px;text-align:center">Нет активных тревог</div>'
+    : ALARMS.map(a => `
+      <div style="background:#fff0f0;border:1px solid #fca5a5;border-radius:7px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:12px;font-weight:800;color:#991b1b">${a.id}</span>
+          <span class="badge b-r">${a.level==='high'?'Высокий':'Средний'}</span>
+          <span style="font-size:10px;color:var(--c-t3);margin-left:auto">${a.time}</span>
+        </div>
+        <div style="font-size:12px;color:var(--c-t1);margin-bottom:4px"><strong>${a.zone}</strong> — ${a.type}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-primary btn-xs" onclick="dismissAlarm(this,'${a.id}')">✓ Обработать</button>
+          <button class="btn btn-outline btn-xs" onclick="openModal('m-alarm')">Подробнее</button>
+        </div>
+      </div>`).join('');
+  const el1 = document.getElementById('alarmsPanel');
+  const el2 = document.getElementById('alarmsFullPanel');
+  if (el1) el1.innerHTML = html;
+  if (el2) el2.innerHTML = html;
+  const cnt = document.getElementById('activeAlarmCount');
+  if (cnt) cnt.textContent = ALARMS.length;
+}
+
+function dismissAlarm(btn, id) {
+  const idx = ALARMS.findIndex(a=>a.id===id);
+  if (idx>=0) ALARMS.splice(idx,1);
+  renderAlarms();
+  showToast('Тревога ' + id + ' обработана', 'ok');
+}
+
+function renderSecSensors() {
+  const el = document.getElementById('secSensors');
+  if (!el) return;
+  el.innerHTML = SEC_SENSORS.map(s=>`
+    <div class="sensor-item">
+      <div class="s-dot ${s.state==='ok'?'s-ok':s.state==='warn'?'s-warn':'s-err'}"></div>
+      <span class="s-name">${s.name}</span>
+      <span class="s-val">${s.val}</span>
+    </div>`).join('');
+}
+
+function quickCheckZone(id) {
+  const z = ZONES.find(x=>x.id===id);
+  if (!z) return;
+  z.status = 'safe';
+  z.last   = now();
+  renderSecurity();
+  showToast('Зона проверена: ' + z.name, 'ok');
+}
+
+// ═══════════════════ MODALS: SUBMIT ═══════════════════
+function submitConfirm() {
+  const train = document.getElementById('cf-train').value;
+  const op    = document.getElementById('cf-op').value;
+  closeModal('m-confirm');
+  dutyEvents.unshift({time:now(), type:'ok', msg:`Подтверждена операция <span>${op}</span> поезда <span>${train}</span>`});
+  renderDutyEventLog();
+  showToast('Операция подтверждена', 'ok');
+}
+function submitEvent() {
+  const type = document.getElementById('ev-type').value;
+  const obj  = document.getElementById('ev-obj').value || 'Объект';
+  closeModal('m-event');
+  dutyEvents.unshift({time:now(), type:'info', msg:`<span>${type}</span>: ${obj}`});
+  renderDutyEventLog();
+  showToast('Событие зафиксировано', 'ok');
+}
+function submitDeviation() {
+  const train = document.getElementById('dv-train').value || '—';
+  const type  = document.getElementById('dv-type').value;
+  closeModal('m-deviation');
+  DUTY_DEVS.unshift({time:now(), train, type, desc: document.getElementById('dv-desc').value||'—', status:'active'});
+  if (currentUser?.role === 'duty') renderDuty();
+  showToast('Отклонение зарегистрировано', 'ok');
+}
+function submitRequest() {
+  const equip = document.getElementById('rq-equip').value || 'Оборудование';
+  const prob  = document.getElementById('rq-desc').value  || '—';
+  const prio  = document.getElementById('rq-prio').value;
+  const resp  = document.getElementById('rq-resp').value  || '—';
+  const date  = document.getElementById('rq-date').value  || '—';
+  const newId = 'ЗА-' + String(Math.floor(Math.random()*100)+42).padStart(4,'0');
+  TECH_REQUESTS.unshift({id:newId,equip,prob,prio,resp,date,status:'open',created:new Date().toLocaleDateString('ru-RU')});
+  closeModal('m-request');
+  renderTechRequests();
+  showToast('Заявка ' + newId + ' создана', 'ok');
+}
+function submitFault() {
+  const equip = document.getElementById('ft-equip').value || 'Объект';
+  closeModal('m-fault');
+  techHistory.unshift({time:new Date().toLocaleString('ru-RU').slice(0,16), equip, work:'Зарегистрирована неисправность', exec: currentUser?.name||'—'});
+  renderTechHistory();
+  showToast('Неисправность зарегистрирована', 'ok');
+}
+function submitMaint() {
+  const equip = document.getElementById('mn-equip').value || 'Объект';
+  const work  = document.getElementById('mn-type').value;
+  const exec  = document.getElementById('mn-exec').value || currentUser?.name||'—';
+  closeModal('m-maint');
+  techHistory.unshift({time:new Date().toLocaleString('ru-RU').slice(0,16), equip, work, exec});
+  renderTechHistory();
+  showToast('Запись добавлена', 'ok');
+}
+function submitIncident() {
+  const loc   = document.getElementById('inc-loc').value;
+  const type  = document.getElementById('inc-type').value;
+  const level = document.getElementById('inc-level').value;
+  const resp  = document.getElementById('inc-resp').value || currentUser?.name||'—';
+  INCIDENTS.unshift({time:now(), loc, type, level, resp, status:'active'});
+  closeModal('m-incident');
+  renderIncidents();
+  showToast('Инцидент зарегистрирован', 'ok');
+}
+function submitAlarm() {
+  const id = document.getElementById('al-id').value.split('—')[0].trim();
+  closeModal('m-alarm');
+  const idx = ALARMS.findIndex(a=>a.id===id);
+  if (idx>=0) ALARMS.splice(idx,1);
+  renderAlarms();
+  showToast('Тревога обработана', 'ok');
+}
+function submitZoneCheck() {
+  const zoneName = document.getElementById('zc-zone').value;
+  const result   = document.getElementById('zc-result').value;
+  const z = ZONES.find(z=>z.name===zoneName);
+  if (z) { z.status=result; z.last=now(); }
+  closeModal('m-zone-check');
+  renderSecurity();
+  showToast('Проверка зоны «' + zoneName + '» сохранена', 'ok');
+}
+
+// ═══════════════════ HELPERS ═══════════════════
+function statCard(k) {
+  return `<div class="stat-card">
+    <div class="sc-row"><div class="sc-icon ${k.ic}"><svg viewBox="0 0 24 24"><path d="${k.icon}"/></svg></div></div>
+    <div class="sc-val">${k.val}</div>
+    <div class="sc-label">${k.label}</div>
+  </div>`;
+}
+
+function now() {
+  return new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+}
+
+function openModal(id)  { document.getElementById(id)?.classList.add('show'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+function closeOnBg(e,id){ if(e.target.id===id) closeModal(id); }
+
+function toggleDropdown() {
+  document.getElementById('userDropdown').classList.toggle('show');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('tbUser')?.contains(e.target))
+    document.getElementById('userDropdown')?.classList.remove('show');
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') {
+    document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'));
+    document.getElementById('userDropdown')?.classList.remove('show');
+  }
+});
+
+function doLogout() {
+  SS.logout(); return;
+  currentUser = null;
+  document.getElementById('appShell').classList.remove('show');
+  document.getElementById('loginScreen').style.display = '';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value  = '';
+  document.getElementById('loginErr').classList.remove('show');
+  document.getElementById('sbNav').innerHTML  = '';
+  showToast('Вы вышли из системы', '');
+}
+
+let _toast;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(_toast);
+  _toast = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ─── Единый вход: берём пользователя из sessionStorage['ss_user'] ───
+(function autoLogin(){
+  const u = SS.current();
+  if (!u || !MENUS[u.role]) return;
+  const colors = {duty:'#1a7fd4', tech:'#7c3aed', security:'#e04646'};
+  currentUser = { name:u.name, role:u.role, email:u.email, position:u.position, color:colors[u.role]||'#0d9488' };
+  const go = () => { document.getElementById('loginScreen').style.display='none'; launchApp(); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})();
+
+// Pre-fill current time in forms
+document.addEventListener('DOMContentLoaded', () => {
+  const ti = document.getElementById('cf-time');
+  if (ti) ti.value = new Date().toTimeString().slice(0,5);
+  const rd = document.getElementById('rq-date');
+  if (rd) rd.value = new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+});
+</script>
+
+<script>
+// ─── Smart Station shared theme toggle ───
+(function(){
+  var saved = localStorage.getItem('ss_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+function ssToggleTheme() {
+  var cur  = document.documentElement.getAttribute('data-theme') || 'light';
+  var next = cur === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ss_theme', next);
+  var btn = document.getElementById('ssThemeBtn');
+  if (btn) btn.title = next === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+  var ico = document.getElementById('ssThemeIco');
+  if (ico) ico.textContent = next === 'dark' ? '☀' : '🌙';
+}
+</script>
+<button id="ssThemeBtn" title="Тёмная тема"
+  onclick="ssToggleTheme()"
+  style="position:fixed;bottom:20px;left:20px;z-index:9000;
+    width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border,#dde4ed);
+    background:var(--surface,#fff);color:var(--text-secondary,#4a6080);
+    font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);transition:all .2s">
+  <span id="ssThemeIco">🌙</span>
+</button>
+
+
+
+
+
+<button class="theme-fab" id="themeFab" onclick="ssToggle()" title="Тема">
+  <span id="themeIco">🌙</span>
+</button>
+<script>
+(function(){
+  var t=localStorage.getItem('ss_theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+  var i=document.getElementById('themeIco');
+  if(i) i.textContent=t==='dark'?'☀️':'🌙';
+})();
+function ssToggle(){
+  var c=document.documentElement.getAttribute('data-theme')||'light';
+  var n=c==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('ss_theme',n);
+  var i=document.getElementById('themeIco');
+  if(i) i.textContent=n==='dark'?'☀️':'🌙';
+}
+</script>
+
+</body>
+</html>
