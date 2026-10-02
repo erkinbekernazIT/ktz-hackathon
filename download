@@ -1,0 +1,18 @@
+# секреты — НИКОГДА не загружать
+.env
+*.env
+# окружения и кэш Python
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+# архивы и мусор
+*.zip
+.vscode/
+.kiro/
+.DS_Store
+Thumbs.db
+
+# личный ключ Groq (start.bat читает его отсюда)
+groq_key.txt

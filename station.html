@@ -422,6 +422,9 @@ tbody tr:hover td{background:var(--c-surf3)}
 .sidebar .sb-bottom-time{color:var(--c-nav-m)}
 .theme-fab{left:252px}
 @media (max-width:760px){#appShell.show{grid-template-columns:1fr}#appShell .sidebar{display:none}#appShell .topbar,#appShell .content-area{grid-column:1}}
+.rq-sel{cursor:pointer;font:inherit;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--rf);outline:none;appearance:auto}
+.rq-sel:focus{box-shadow:0 0 0 3px var(--c-acc3)}
+.rq-sel option{background:var(--c-surf);color:var(--c-t1)}
 </style>
 </head>
 <body>
@@ -1279,6 +1282,21 @@ let TECH_REQUESTS = [
   {id:'ЗА-0032',equip:'Стрел. перевод №3',prob:'Плановая замена пружины',   prio:'Низкий',     resp:'Ахмет М.Б.',   date:'10.10.2026',status:'plan',   created:'28.09.2026'},
   {id:'ЗА-0029',equip:'Камера платф. №2', prob:'Угол обзора — настройка',   prio:'Низкий',     resp:'Нуров С.В.',   date:'07.10.2026',status:'done',   created:'25.09.2026'},
 ];
+try { const _sv = JSON.parse(localStorage.getItem('ss_tech_requests') || 'null'); if (Array.isArray(_sv) && _sv.length) TECH_REQUESTS = _sv; } catch (e) {}
+function saveTechRequests() { try { localStorage.setItem('ss_tech_requests', JSON.stringify(TECH_REQUESTS)); } catch (e) {} }
+const REQ_FLOW = [['open','Открыта'],['work','В работе'],['plan','Запланирована'],['done','Выполнена']];
+function reqStatusCell(r, statColor) {
+  return '<td><select class="badge ' + statColor[r.status] + ' rq-sel" title="Изменить статус" onchange="setReqStatus(\'' + r.id + '\', this.value)">' +
+    REQ_FLOW.map(([k, l]) => '<option value="' + k + '"' + (k === r.status ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></td>';
+}
+function setReqStatus(id, st) {
+  const r = TECH_REQUESTS.find(x => x.id === id); if (!r) return;
+  r.status = st; saveTechRequests();
+  renderTech();
+  const lbl = (REQ_FLOW.find(x => x[0] === st) || [, st])[1];
+  showToast('Заявка ' + id + ': ' + lbl, 'ok');
+}
+
 const TECH_SENSORS = [
   {name:'Датчик пути №1',      state:'ok',   val:'Норма'},
   {name:'Датчик пути №2',      state:'ok',   val:'Норма'},
@@ -1304,7 +1322,7 @@ function renderTech() {
     {val:5,  label:'Исправно',             ic:'ic-g', icon:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'},
     {val:2,  label:'Требует проверки',     ic:'ic-o', icon:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'},
     {val:1,  label:'Неисправно',           ic:'ic-r', icon:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z'},
-    {val:3,  label:'Открытых заявок',      ic:'ic-p', icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 16h8v2H8zm0-4h8v2H8zm0-4h4v2H8z'},
+    {val:TECH_REQUESTS.filter(r=>r.status!=='done').length, label:'Открытых заявок',      ic:'ic-p', icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 16h8v2H8zm0-4h8v2H8zm0-4h4v2H8z'},
   ];
   document.getElementById('techKpi').innerHTML = kpis.map(k=>statCard(k)).join('');
 
@@ -1338,7 +1356,7 @@ function renderTechRequests() {
     <td><span class="badge ${prioColor[r.prio]}">${r.prio}</span></td>
     <td>${r.resp}</td>
     <td style="font-size:11px">${r.date}</td>
-    <td><span class="badge ${statColor[r.status]}">${statLabel[r.status]}</span></td>
+    ${reqStatusCell(r, statColor)}
   </tr>`).join('');
   const b1 = document.getElementById('techRequestsBody');
   const b2 = document.getElementById('allRequestsBody');
@@ -1352,7 +1370,7 @@ function renderTechRequests() {
       <td>${r.resp}</td>
       <td style="font-size:11px;color:var(--c-t3)">${r.created}</td>
       <td style="font-size:11px">${r.date}</td>
-      <td><span class="badge ${statColor[r.status]}">${statLabel[r.status]}</span></td>
+      ${reqStatusCell(r, statColor)}
     </tr>`).join('');
   }
 }
@@ -1573,8 +1591,9 @@ function submitRequest() {
   const date  = document.getElementById('rq-date').value  || '—';
   const newId = 'ЗА-' + String(Math.floor(Math.random()*100)+42).padStart(4,'0');
   TECH_REQUESTS.unshift({id:newId,equip,prob,prio,resp,date,status:'open',created:new Date().toLocaleDateString('ru-RU')});
+  saveTechRequests();
   closeModal('m-request');
-  renderTechRequests();
+  renderTech();
   showToast('Заявка ' + newId + ' создана', 'ok');
 }
 function submitFault() {

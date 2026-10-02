@@ -349,7 +349,7 @@ function makeBall(mx, mz, col, emissive, r){
     new T.SphereGeometry(r||.4, 10, 8),
     mk(col, {emissive: emissive||col, emissiveIntensity:.8})
   );
-  mesh.position.set(mx*k, DEP+.55, mz*k);
+  mesh.position.set(mx*k, .55, mz*k);
   L.add(mesh);
   return mesh;
 }
@@ -357,8 +357,8 @@ function makeBall(mx, mz, col, emissive, r){
 // Создать линию между двумя MAP-точками
 function makeLine(ax,az, bx,bz, col){
   const geo = new T.BufferGeometry().setFromPoints([
-    new T.Vector3(ax*k, DEP+.5, az*k),
-    new T.Vector3(bx*k, DEP+.5, bz*k)
+    new T.Vector3(ax*k, .5, az*k),
+    new T.Vector3(bx*k, .5, bz*k)
   ]);
   const mat = new T.LineDashedMaterial({color:col,dashSize:.6,gapSize:.4,transparent:true,opacity:.75});
   const ln  = new T.Line(geo, mat);
@@ -381,6 +381,13 @@ function clearDyn(onlyDepot){
   } else {
     pinList = [];
   }
+}
+
+/* Куда сдвинуть карту (G), чтобы точка карты (mx,mz) оказалась в центре экрана */
+function centerOn(mx, mz){
+  const v = new T.Vector3(mx*k, 0, mz*k);
+  L.localToWorld(v);
+  return { x: G.position.x - v.x, z: G.position.z - v.z + 4 };
 }
 
 /* ── Плавный zoom камеры ──────────────────────────────── */
@@ -418,8 +425,8 @@ function drillCity1(cityName, cx, cy){
 
   // Рисуем маркеры станций
   stations.forEach((s,i)=>{
-    const wx = cx + s.dx;
-    const wz = cy + s.dz;
+    const wx = cx + s.dx * 2.2;
+    const wz = cy + s.dz * 2.2;
 
     const ball = makeBall(wx, wz, 0x1f6fe0, 0x3a9eff);
     const el   = document.createElement('span');
@@ -429,7 +436,7 @@ function drillCity1(cityName, cx, cy){
 
     // смещение метки от точки: чередуем выше/ниже
     const oy = (i%2===0) ? -22 : 10;
-    pinList.push({ el, wx, wz, wy: DEP+.55, ox:-el.offsetWidth/2||0, oy, isDepot:false });
+    pinList.push({ el, wx, wz, wy: .6, ox:-(el.offsetWidth/2||40), oy, isDepot:false });
     dynObj.push({ mesh:ball, el, isDepot:false });
 
     el.addEventListener('click', ev=>{
@@ -440,11 +447,11 @@ function drillCity1(cityName, cx, cy){
 
   // Зум к городу
   smoothZoom(
-    D1 * 0.38,          // приближаем
+    D1 * 0.22,          // приближаем
     yaw,                // yaw не меняем
     0.62,               // смотрим сверху
-    -(cx*k),            // центрируем по X
-    -(cy*k),            // центрируем по Z
+    centerOn(cx, cy).x, // центрируем по X
+    centerOn(cx, cy).z, // центрируем по Z
     900
   );
 
@@ -469,7 +476,7 @@ function drillStation2(stnName, sx, sz){
 
   deps.forEach((d,i)=>{
     const angle = (i / deps.length) * Math.PI * 2 + Math.PI * 0.2;
-    const r     = 3;
+    const r     = 4.5;
     const wx    = sx + Math.cos(angle) * r;
     const wz    = sz + Math.sin(angle) * r;
 
@@ -481,18 +488,18 @@ function drillStation2(stnName, sx, sz){
     el.textContent = d;
     lbl.appendChild(el);
 
-    pinList.push({ el, wx, wz, wy:DEP+.55, ox:8, oy:-16, isDepot:true });
+    pinList.push({ el, wx, wz, wy:.6, ox:8, oy:-16, isDepot:true });
     dynObj.push({ mesh:ball, el, isDepot:true });
     dynObj.push({ mesh:line, el:document.createElement('span'), isDepot:true });
   });
 
   // Зум к станции ещё ближе
   smoothZoom(
-    D1 * 0.52,
+    D1 * 0.6,
     yaw,
     0.72,
-    -(sx*k),
-    -(sz*k),
+    centerOn(sx, sz).x,
+    centerOn(sx, sz).z,
     700
   );
 

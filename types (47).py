@@ -1,0 +1,15 @@
+from typing import NewType
+
+TrainId = NewType("TrainId", str)
+StationId = NewType("StationId", str)
+TrackId = NewType("TrackId", str)
+NodeId = NewType("NodeId", str)
+RouteId = NewType("RouteId", str)
+CrewId = NewType("CrewId", str)
+EquipmentId = NewType("EquipmentId", str)
+OperationId = NewType("OperationId", str)
+ProcedureId = NewType("ProcedureId", str)
+LocomotiveId = NewType("LocomotiveId", str)
+CarId = NewType("CarId", str)
+DispatcherId = NewType("DispatcherId", str)
+TimeSlotId = NewType("TimeSlotId", str)
